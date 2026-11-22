@@ -4,23 +4,24 @@ A cross-platform music app inspired by immersive listening and social discovery,
 
 ## Current status — Milestone 2 (implementation in progress)
 - Premium dark home screen
-- Home, Discover, Library and Profile tabs
+- Five-tab navigation: Home, Discover, Flow, Search, Library and You
 - Mood discovery chips and demo track list
 - Device audio file import through the system picker
 - Shared Expo Audio playback service with background audio and lock-screen configuration
 - Local library queue, play/pause, previous/next and 15-second seek controls
 - Sound Lab, app settings and listening insights prototype screens
 - Full-screen player with native local-file playback controls
+- Resso-inspired vertical Flow feed: swipe between local tracks, animated abstract artwork, progress display, favourites and automatic next-track playback
+- Persistent mini-player above navigation (hidden in immersive Flow mode)
 - Android and iOS app configuration
 - Expo SDK 58 / React Native 0.88 project manifest
 
-Local-file playback is now wired through Expo Audio. The app can import audio files selected by the user and play them through the shared player service. Background playback and lock-screen capabilities are configured, but still require a native development build and device testing. Streaming catalogue, EQ/DSP effects, synced lyrics and cloud/social features are not implemented yet.
+Local-file playback is now wired through Expo Audio. The app can import audio files selected by the user and play them through the shared player service. Background playback and lock-screen capabilities are configured, but still require a native development build and device testing. The Flow feed currently uses user-imported local audio; it is not an online endless catalogue. Streaming catalogue, EQ/DSP effects, synced lyrics and cloud/social features are not implemented yet.
 
 ## Setup when a computer is available
 Install Node.js 22.13 or newer, then clone this repository and run:
 
     npm install
-    npx expo install --fix
     npx expo install --fix
     npx expo-doctor
     npx expo start
