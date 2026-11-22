@@ -28,7 +28,16 @@ RHYTHM E combines the social, expressive, mood-led listening experience users ex
 | USB DAC / bit-perfect output, high-resolution audio | Audiophile tier | P3 | Native audio pipeline, hardware-specific validation |
 | AutoEQ headphone calibration, tempo/pitch controls | Power-user tools | P3 | DSP engine + maintained headphone profile data |
 
-## REELSONIC audio quality milestone\n\nREELSONIC is the planned sound signature: gentle low-end weight, clear vocal presence, controlled high-frequency detail and safe output headroom. Initial preset targets live in `src/audio/reelsonic.ts`; they are design data only and do not alter playback. The current Expo Audio player does not expose an insertable DSP graph. See `docs/REELSONIC_DSP.md` for the React Native Audio API evaluation, integration gates and physical-device validation plan.\n\n## Architecture decision
+## REELSONIC audio quality milestone
+
+REELSONIC is the planned sound signature: gentle low-end weight, clear vocal presence, controlled high-frequency detail and safe output headroom. Initial preset targets live in `src/audio/reelsonic.ts`; they are design data only and do not alter playback. The current Expo Audio player does not expose an insertable DSP graph. See `docs/REELSONIC_DSP.md` for the React Native Audio API evaluation, integration gates and physical-device validation plan.
+
+
+## Licensed catalogue milestone
+
+The selected product direction is a licensed, on-demand catalogue, targeting India first. Provider selection and rights negotiation must happen before integration. The backend will own provider credentials, user entitlements, territory checks and short-lived playback authorisation; the mobile app will use a provider-neutral catalogue adapter. Local-file playback remains available as a separate source. See `docs/LICENSED_CATALOGUE_IMPLEMENTATION.md` for provider evaluation, rights gates, security and phased delivery.
+
+## Architecture decision
 
 The current project is Expo Router + React Native. Keep the UI and product logic shared between Android and iOS. For playback, use a maintained native-capable audio solution and a development build; Expo Go is not the final test environment for background playback, media controls, or DSP. Isolate audio operations behind a small playback service so the UI is not coupled to a specific engine.
 
