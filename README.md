@@ -11,7 +11,11 @@ A cross-platform music app inspired by immersive listening and social discovery,
 - Local library queue, play/pause, previous/next and 15-second seek controls
 - Sound Lab with REELSONIC preset preview (DSP not active yet), app settings and listening insights prototype screens
 - Full-screen player with native local-file playback controls
-- Resso-inspired vertical Flow feed: swipe between queued local or permitted online tracks, animated abstract artwork, progress display, shared favourites and automatic next-track playback\n- Free music discovery through Internet Archive items with a Creative Commons/Public Domain licence URL check and source attribution\n- LRCLIB lyrics lookup with timestamp-based line highlighting when synced lyrics are available\n- Official YouTube search hand-off (opens YouTube; does not embed, extract or relay its audio)
+- Resso-inspired vertical Flow feed: swipe between queued local or permitted online tracks, animated abstract artwork, progress display, shared favourites and automatic next-track playback
+- On-device persistent library metadata, favourites and recent listening history
+- Artist and album browse cards with dedicated detail pages
+- Player queue drawer and functional sleep timer
+- Free music discovery through Internet Archive items with a Creative Commons/Public Domain licence URL check and source attribution\n- LRCLIB lyrics lookup with timestamp-based line highlighting when synced lyrics are available\n- Official YouTube search hand-off (opens YouTube; does not embed, extract or relay its audio)
 - Persistent mini-player above navigation (hidden in immersive Flow mode)
 - Android and iOS app configuration
 - Expo SDK 58 / React Native 0.88 project manifest
