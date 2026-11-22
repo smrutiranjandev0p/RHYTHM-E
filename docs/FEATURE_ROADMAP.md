@@ -81,3 +81,22 @@ LastWave-Native is GPL-3.0 licensed and its README describes it as a non-commerc
 ## Current status
 
 Implemented on `development`: five-tab navigation with Search and Flow, persistent mini-player, a vertical swipe-to-play local music feed with animated abstract artwork, progress display and in-session favourites, automatic next-track playback, shared Expo Audio player service, user-selected local audio import, local queue, play/pause/skip/seek controls, and native background playback / lock-screen configuration. Flow currently browses only imported local tracks; an online catalogue, personalized recommendations and persistent favourites are not implemented. Sound Lab, app settings, listening insights, and lyrics remain interface prototypes. No online streaming catalogue, synced lyrics provider, real DSP equalizer, social listening backend, or cloud sync is implemented yet. The current direction is documented in `docs/LASTWAVE_INSPIRED_NONCOMMERCIAL_PLAN.md`. The native audio path has not yet been built or tested on a physical device; validate it with a development build before release.
+
+
+## Free-source integration update — November 2026
+
+Implemented on `development`:
+- Internet Archive discovery via Advanced Search, followed by item metadata lookup and a Creative Commons/Public Domain licence URL check before a result is offered for playback.
+- Direct audio playback of selected permitted archive files through the existing shared Expo Audio player and queue.
+- Source item link and licence URL are shown with each result so users can review attribution and terms.
+- Official YouTube search hand-off opens YouTube's own app/site. It is not an embedded player and RHYTHM E does not extract or relay YouTube audio.
+- LRCLIB lookup for lyrics and line highlighting based on the current playback position when timestamped lyrics exist.
+- Flow favourites are shared with the Library during the current app session.
+
+Still not complete or validated:
+- Internet Archive is a user-uploaded archive; metadata licence declarations are not independently verified by RHYTHM E. Review each source item before use.
+- A native YouTube player integration is not included; official YouTube playback stays in YouTube.
+- Persistent playlists/favourites and automatic device library indexing are not yet implemented.
+- REELSONIC controls remain design/preset UI only; no actual audio DSP is active.
+- Background playback and lock-screen controls are configured but need an Android development build and physical-device testing.
+- No build, typecheck, or device test was run as part of this phone-only GitHub update.
