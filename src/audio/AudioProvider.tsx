@@ -1,7 +1,9 @@
 import React,{createContext,useContext,useEffect,useMemo,useRef,useState} from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {createAudioPlayer,setAudioModeAsync,useAudioPlayerStatus} from "expo-audio";
 
 export type LocalTrack={id:string;name:string;uri:string;artist:string;album?:string;source?:"Internet Archive"|"Local";license?:string;itemUrl?:string};
+type PersistedMusic={tracks:LocalTrack[];favorites:string[];recentTracks:LocalTrack[];activeTrackId:string|null};
 type AudioContextValue={
  tracks:LocalTrack[];activeIndex:number;activeTrack:LocalTrack|null;status:any;
  addTracks:(tracks:LocalTrack[])=>void;addAndPlayTrack:(track:LocalTrack)=>void;playTrack:(index:number)=>void;
@@ -10,6 +12,7 @@ type AudioContextValue={
  recentTracks:LocalTrack[];setSleepTimer:(minutes:number)=>void;cancelSleepTimer:()=>void;sleepTimerEndsAt:number|null;
 };
 const AudioContext=createContext<AudioContextValue|null>(null);
+const STORAGE_KEY="rhythm-e.music-library.v1";
 
 export function AudioProvider({children}:{children:React.ReactNode}){
  const [player]=useState(()=>createAudioPlayer(null));
@@ -18,9 +21,33 @@ export function AudioProvider({children}:{children:React.ReactNode}){
  const [activeIndex,setActiveIndex]=useState(-1);
  const [favorites,setFavorites]=useState<string[]>([]);
  const [recentTracks,setRecentTracks]=useState<LocalTrack[]>([]);
+ const [storageReady,setStorageReady]=useState(false);
  const [sleepTimerEndsAt,setSleepTimerEndsAt]=useState<number|null>(null);
  const sleepTimeout=useRef<ReturnType<typeof setTimeout>|null>(null);
  const activeTrack=activeIndex>=0?tracks[activeIndex]||null:null;
+
+ useEffect(()=>{
+  let mounted=true;
+  AsyncStorage.getItem(STORAGE_KEY).then(raw=>{
+   if(!raw||!mounted)return;
+   try{
+    const saved=JSON.parse(raw) as Partial<PersistedMusic>;
+    const restored=Array.isArray(saved.tracks)?saved.tracks.filter(t=>t&&typeof t.uri==="string"&&typeof t.id==="string"):[];
+    setTracks(restored);
+    setFavorites(Array.isArray(saved.favorites)?saved.favorites.filter(x=>typeof x==="string"):[]);
+    setRecentTracks(Array.isArray(saved.recentTracks)?saved.recentTracks.filter(t=>t&&typeof t.uri==="string").slice(0,50):[]);
+    const active=saved.activeTrackId?restored.findIndex(t=>t.id===saved.activeTrackId):-1;
+    setActiveIndex(active);
+   }catch{ /* Ignore damaged saved data and start with an empty library. */ }
+  }).catch(()=>{}).finally(()=>{if(mounted)setStorageReady(true);});
+  return ()=>{mounted=false;};
+ },[]);
+
+ useEffect(()=>{
+  if(!storageReady)return;
+  const payload:PersistedMusic={tracks,favorites,recentTracks,activeTrackId:activeTrack?.id||null};
+  AsyncStorage.setItem(STORAGE_KEY,JSON.stringify(payload)).catch(()=>{});
+ },[storageReady,tracks,favorites,recentTracks,activeTrack?.id]);
 
  useEffect(()=>{
   setAudioModeAsync({playsInSilentMode:true,shouldPlayInBackground:true,interruptionMode:"doNotMix"}).catch(()=>{});
@@ -36,7 +63,7 @@ export function AudioProvider({children}:{children:React.ReactNode}){
   const track=tracks[index];if(!track)return;
   setActiveIndex(index);remember(track);
   player.replace({uri:track.uri,name:track.name});
-  player.setActiveForLockScreen(true,{title:track.name,artist:track.artist,albumTitle:track.album|| (track.source==="Internet Archive"?"RHYTHM E • Free Music":"RHYTHM E • Local Library")});
+  player.setActiveForLockScreen(true,{title:track.name,artist:track.artist,albumTitle:track.album||(track.source==="Internet Archive"?"RHYTHM E • Free Music":"RHYTHM E • Local Library")});
   player.play();
  };
  const addAndPlayTrack=(track:LocalTrack)=>{
@@ -60,7 +87,6 @@ export function AudioProvider({children}:{children:React.ReactNode}){
   const endsAt=Date.now()+minutes*60*1000;setSleepTimerEndsAt(endsAt);
   sleepTimeout.current=setTimeout(()=>{player.pause();sleepTimeout.current=null;setSleepTimerEndsAt(null);},minutes*60*1000);
  };
-
  useEffect(()=>{if(status.didJustFinish&&activeIndex>=0&&tracks.length>0)playTrack((activeIndex+1)%tracks.length);},[status.didJustFinish]);
  const value=useMemo(()=>({tracks,activeIndex,activeTrack,status,addTracks,addAndPlayTrack,playTrack,toggleFavorite,isFavorite,favorites,togglePlayback,skipNext,skipPrevious,seekTo,recentTracks,setSleepTimer,cancelSleepTimer,sleepTimerEndsAt}),[tracks,activeIndex,activeTrack,status,favorites,recentTracks,sleepTimerEndsAt]);
  return <AudioContext.Provider value={value}>{children}</AudioContext.Provider>;
