@@ -16,7 +16,7 @@ function MiniPlayer(){
 export default function TabLayout(){return <View style={s.root}><Tabs screenOptions={{headerShown:false,tabBarStyle:s.tabBar,tabBarActiveTintColor:"#FF9CC4",tabBarInactiveTintColor:"#887B90",tabBarLabelStyle:s.label,tabBarItemStyle:{paddingTop:5},sceneStyle:{backgroundColor:"#160D1C"}}}>
  <Tabs.Screen name="index" options={{title:"Home",tabBarIcon:({color,size})=><MaterialCommunityIcons name="home-variant" color={color} size={size}/>}}/>
  <Tabs.Screen name="discover" options={{title:"Discover",tabBarIcon:({color,size})=><MaterialCommunityIcons name="compass-outline" color={color} size={size}/>}}/>
- <Tabs.Screen name="search" options={{title:"Search",tabBarIcon:({color,size})=><MaterialCommunityIcons name="magnify" color={color} size={size+3}/>}}/>
+ <Tabs.Screen name="flow" options={{title:"Flow",tabBarIcon:({color,size})=><MaterialCommunityIcons name="waveform" color={color} size={size+2}/>}}/>\n <Tabs.Screen name="search" options={{title:"Search",tabBarIcon:({color,size})=><MaterialCommunityIcons name="magnify" color={color} size={size+3}/>}}/>
  <Tabs.Screen name="library" options={{title:"Library",tabBarIcon:({color,size})=><MaterialCommunityIcons name="music-box-multiple-outline" color={color} size={size}/>}}/>
  <Tabs.Screen name="profile" options={{title:"You",tabBarIcon:({color,size})=><MaterialCommunityIcons name="account-circle-outline" color={color} size={size}/>}}/>
  </Tabs><MiniPlayer/></View>}
