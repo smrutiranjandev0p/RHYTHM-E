@@ -6,7 +6,7 @@ export type LocalTrack={id:string;name:string;uri:string;artist:string;album?:st
 type PersistedMusic={tracks:LocalTrack[];favorites:string[];recentTracks:LocalTrack[];activeTrackId:string|null};
 type AudioContextValue={
  tracks:LocalTrack[];activeIndex:number;activeTrack:LocalTrack|null;status:any;
- addTracks:(tracks:LocalTrack[])=>void;addAndPlayTrack:(track:LocalTrack)=>void;playTrack:(index:number)=>void;
+ addTracks:(tracks:LocalTrack[])=>void;updateTrack:(id:string,changes:Partial<Pick<LocalTrack,"name"|"artist"|"album">>)=>void;addAndPlayTrack:(track:LocalTrack)=>void;playTrack:(index:number)=>void;
  toggleFavorite:(id:string)=>void;isFavorite:(id:string)=>boolean;favorites:string[];
  togglePlayback:()=>void;skipNext:()=>void;skipPrevious:()=>void;seekTo:(seconds:number)=>void;
  recentTracks:LocalTrack[];setSleepTimer:(minutes:number)=>void;cancelSleepTimer:()=>void;sleepTimerEndsAt:number|null;
@@ -55,7 +55,7 @@ export function AudioProvider({children}:{children:React.ReactNode}){
   return ()=>{if(sleepTimeout.current)clearTimeout(sleepTimeout.current);player.clearLockScreenControls();player.remove();};
  },[player]);
 
- const addTracks=(incoming:LocalTrack[])=>setTracks(old=>{
+ const updateTrack=(id:string,changes:Partial<Pick<LocalTrack,"name"|"artist"|"album">>)=>{\n  setTracks(old=>old.map(track=>track.id===id?{...track,...changes}:track));\n  setRecentTracks(old=>old.map(track=>track.id===id?{...track,...changes}:track));\n };\n const addTracks=(incoming:LocalTrack[])=>setTracks(old=>{
   const seen=new Set(old.map(t=>t.uri));
   return [...old,...incoming.filter(t=>!seen.has(t.uri))];
  });
@@ -89,7 +89,7 @@ export function AudioProvider({children}:{children:React.ReactNode}){
   sleepTimeout.current=setTimeout(()=>{player.pause();sleepTimeout.current=null;setSleepTimerEndsAt(null);},minutes*60*1000);
  };
  useEffect(()=>{if(status.didJustFinish&&activeIndex>=0&&tracks.length>0)playTrack((activeIndex+1)%tracks.length);},[status.didJustFinish]);
- const value=useMemo(()=>({tracks,activeIndex,activeTrack,status,addTracks,addAndPlayTrack,playTrack,toggleFavorite,isFavorite,favorites,togglePlayback,skipNext,skipPrevious,seekTo,recentTracks,setSleepTimer,cancelSleepTimer,sleepTimerEndsAt}),[tracks,activeIndex,activeTrack,status,favorites,recentTracks,sleepTimerEndsAt]);
+ const value=useMemo(()=>({tracks,activeIndex,activeTrack,status,addTracks,updateTrack,addAndPlayTrack,playTrack,toggleFavorite,isFavorite,favorites,togglePlayback,skipNext,skipPrevious,seekTo,recentTracks,setSleepTimer,cancelSleepTimer,sleepTimerEndsAt}),[tracks,activeIndex,activeTrack,status,favorites,recentTracks,sleepTimerEndsAt]);
  return <AudioContext.Provider value={value}>{children}</AudioContext.Provider>;
 }
 export function useAudio(){const value=useContext(AudioContext);if(!value)throw new Error("useAudio must be used inside AudioProvider");return value;}
