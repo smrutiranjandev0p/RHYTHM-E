@@ -4,7 +4,7 @@ A cross-platform music app inspired by immersive listening and social discovery,
 
 ## Current status — Milestone 2 (implementation in progress)
 - Premium dark home screen
-- Five-tab navigation: Home, Discover, Flow, Search, Library and You
+- Six-tab navigation: Home, Discover, Flow, Search, Library and You
 - Mood discovery chips and demo track list
 - Device audio file import through the system picker
 - Shared Expo Audio playback service with background audio and lock-screen configuration
