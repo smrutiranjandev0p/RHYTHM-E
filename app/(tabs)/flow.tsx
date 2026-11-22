@@ -8,13 +8,13 @@ const palettes=["#8E3D68","#51417D","#276A68","#A85A36","#3E587E","#7255A5"];
 const symbols=["waveform","music-note","headphones","music-clef-treble","equalizer","audio-video"];
 export default function FlowScreen(){
  const router=useRouter();const {height}=useWindowDimensions();
- const {tracks,activeIndex,activeTrack,status,playTrack,togglePlayback,skipNext,skipPrevious,seekTo}=useAudio();
+ const {tracks,activeIndex,activeTrack,status,playTrack,togglePlayback}=useAudio();
  const [page,setPage]=useState(Math.max(0,activeIndex));const [favorites,setFavorites]=useState<string[]>([]);
  const scroll=useRef<ScrollView>(null);const pulse=useRef(new Animated.Value(0)).current;const rotation=useRef(new Animated.Value(0)).current;
  const pageHeight=Math.max(440,height-160);
  useEffect(()=>{const animation=Animated.loop(Animated.sequence([Animated.timing(pulse,{toValue:1,duration:1900,useNativeDriver:true}),Animated.timing(pulse,{toValue:0,duration:1900,useNativeDriver:true})]));animation.start();return()=>animation.stop();},[pulse]);
  useEffect(()=>{const animation=Animated.loop(Animated.timing(rotation,{toValue:1,duration:18000,useNativeDriver:true}));animation.start();return()=>animation.stop();},[rotation]);
- useEffect(()=>{if(tracks.length&&activeIndex<0)playTrack(0);else if(activeIndex>=0){setPage(activeIndex);}},[]);
+ useEffect(()=>{if(tracks.length&&activeIndex<0){playTrack(0);}else if(activeIndex>=0){setPage(activeIndex);scroll.current?.scrollTo({y:activeIndex*pageHeight,animated:true});}},[activeIndex,tracks.length]);
  const onEnd=(event:NativeSyntheticEvent<NativeScrollEvent>)=>{const next=Math.max(0,Math.min(tracks.length-1,Math.round(event.nativeEvent.contentOffset.y/pageHeight)));setPage(next);if(next!==activeIndex)playTrack(next);};
  const go=(index:number)=>{if(!tracks.length)return;const next=Math.max(0,Math.min(tracks.length-1,index));scroll.current?.scrollTo({y:next*pageHeight,animated:true});setPage(next);if(next!==activeIndex)playTrack(next);};
  const toggleFavorite=(id:string)=>setFavorites(old=>old.includes(id)?old.filter(x=>x!==id):[...old,id]);
@@ -34,7 +34,7 @@ export default function FlowScreen(){
     </View>
     <View style={s.trackInfo}><View style={{flex:1}}><Text style={s.trackName} numberOfLines={2}>{track.name}</Text><Text style={s.artist}>{track.artist}</Text></View><TouchableOpacity onPress={()=>toggleFavorite(track.id)} style={s.iconButton}><MaterialCommunityIcons name={liked?"heart":"heart-outline"} size={26} color={liked?"#FF8DBB":"#FFF"}/></TouchableOpacity><TouchableOpacity onPress={()=>router.push("/lyrics/"+track.id)} style={s.iconButton}><MaterialCommunityIcons name="text-box-outline" size={25} color="#FFF"/></TouchableOpacity></View>
     <View style={s.progress}><View style={[s.progressFill,{width:selected?percent+"%":"0%"}]}/></View>
-    <View style={s.controls}><TouchableOpacity onPress={()=>{skipPrevious();go(Math.max(0,index-1));}}><MaterialCommunityIcons name="skip-previous" size={31} color="#FFF"/></TouchableOpacity><TouchableOpacity style={s.playButton} onPress={()=>{if(activeIndex!==index)playTrack(index);else togglePlayback();}}><MaterialCommunityIcons name={activeIndex===index&&status.playing?"pause":"play"} size={31} color="#231522"/></TouchableOpacity><TouchableOpacity onPress={()=>{skipNext();go(Math.min(tracks.length-1,index+1));}}><MaterialCommunityIcons name="skip-next" size={31} color="#FFF"/></TouchableOpacity></View>
+    <View style={s.controls}><TouchableOpacity onPress={()=>go(Math.max(0,index-1))}><MaterialCommunityIcons name="skip-previous" size={31} color="#FFF"/></TouchableOpacity><TouchableOpacity style={s.playButton} onPress={()=>{if(activeIndex!==index)playTrack(index);else togglePlayback();}}><MaterialCommunityIcons name={activeIndex===index&&status.playing?"pause":"play"} size={31} color="#231522"/></TouchableOpacity><TouchableOpacity onPress={()=>go(Math.min(tracks.length-1,index+1))}><MaterialCommunityIcons name="skip-next" size={31} color="#FFF"/></TouchableOpacity></View>
     <Text style={s.swipeHint}>SWIPE UP FOR NEXT  •  SWIPE DOWN FOR PREVIOUS</Text>
    </View>})}
   </ScrollView>
