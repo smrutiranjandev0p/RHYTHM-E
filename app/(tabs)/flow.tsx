@@ -8,8 +8,8 @@ const palettes=["#8E3D68","#51417D","#276A68","#A85A36","#3E587E","#7255A5"];
 const symbols=["waveform","music-note","headphones","music-clef-treble","equalizer","audio-video"];
 export default function FlowScreen(){
  const router=useRouter();const {height}=useWindowDimensions();
- const {tracks,activeIndex,activeTrack,status,playTrack,togglePlayback}=useAudio();
- const [page,setPage]=useState(Math.max(0,activeIndex));const [favorites,setFavorites]=useState<string[]>([]);
+ const {tracks,activeIndex,activeTrack,status,playTrack,togglePlayback,favorites,toggleFavorite}=useAudio();
+ const [page,setPage]=useState(Math.max(0,activeIndex));
  const scroll=useRef<ScrollView>(null);const pulse=useRef(new Animated.Value(0)).current;const rotation=useRef(new Animated.Value(0)).current;
  const pageHeight=Math.max(480,height-65);
  useEffect(()=>{const animation=Animated.loop(Animated.sequence([Animated.timing(pulse,{toValue:1,duration:1900,useNativeDriver:true}),Animated.timing(pulse,{toValue:0,duration:1900,useNativeDriver:true})]));animation.start();return()=>animation.stop();},[pulse]);
