@@ -6,7 +6,8 @@ A cross-platform music app inspired by immersive listening and social discovery,
 - Premium dark home screen
 - Six-tab navigation: Home, Discover, Flow, Search, Library and You
 - Mood discovery chips and demo track list
-- Device audio file import through the system picker
+- Device audio file import through the system picker, copied into private app Documents storage
+- Editable local track metadata: title, artist and album
 - Shared Expo Audio playback service with background audio and lock-screen configuration
 - Local library queue, play/pause, previous/next and 15-second seek controls
 - Sound Lab with REELSONIC preset preview (DSP not active yet), app settings and listening insights prototype screens
