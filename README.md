@@ -33,3 +33,7 @@ Use Expo Go only if the installed Expo Go app supports SDK 58. For native audio,
 
 ## Rights
 Use only audio and lyrics for which RHYTHM E has the required rights. No Resso branding, proprietary assets or commercial music are bundled here.
+
+## Product roadmap
+
+See [docs/FEATURE_ROADMAP.md](docs/FEATURE_ROADMAP.md) for the planned Resso-inspired listening experience, futuristic audio features, platform architecture, priorities, and licensing considerations.
