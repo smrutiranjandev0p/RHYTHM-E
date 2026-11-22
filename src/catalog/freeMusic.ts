@@ -27,7 +27,7 @@ export async function searchFreeMusic(query: string): Promise<FreeMusicTrack[]> 
     page: "1",
     output: "json"
   });
-  const response = await fetch(`${ARCHIVE}/advancedsearch.php?${params.toString()}`);
+  ["identifier", "title", "creator", "licenseurl"].forEach(field => params.append("fl[]", field));\n  const response = await fetch(`${ARCHIVE}/advancedsearch.php?${params.toString()}`);
   if (!response.ok) throw new Error("Free music search is temporarily unavailable.");
   const payload = await response.json();
   const docs: ArchiveDoc[] = payload?.response?.docs || [];
