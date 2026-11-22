@@ -1,51 +1,199 @@
-# RHYTHM E 🎧
+<div align="center">
 
-A cross-platform music app inspired by immersive listening and social discovery, with original branding and design.
+# ◈ RHYTHM E
 
-## Current status — Milestone 2 (implementation in progress)
-- Premium dark home screen
-- Six-tab navigation: Home, Discover, Flow, Search, Library and You
-- Mood discovery chips and demo track list
-- Device audio file import through the system picker, copied into private app Documents storage
-- Editable local track metadata: title, artist and album
-- Shared Expo Audio playback service with background audio and lock-screen configuration
-- Local library queue, play/pause, previous/next and 15-second seek controls
-- Sound Lab with REELSONIC preset preview (DSP not active yet), app settings and listening insights prototype screens
-- Full-screen player with native local-file playback controls
-- Resso-inspired vertical Flow feed: swipe between queued local or permitted online tracks, animated abstract artwork, progress display, shared favourites and automatic next-track playback
-- On-device persistent library metadata, favourites and recent listening history
-- Artist and album browse cards with dedicated detail pages
-- Player queue drawer and functional sleep timer
-- Free music discovery through Internet Archive items with a Creative Commons/Public Domain licence URL check and source attribution
-- LRCLIB lyrics lookup with timestamp-based line highlighting when synced lyrics are available
-- Official YouTube search hand-off (opens YouTube; does not embed, extract or relay its audio)
-- Persistent mini-player above navigation (hidden in immersive Flow mode)
-- Android and iOS app configuration
-- Expo SDK 58 / React Native 0.88 project manifest
+### THE SOUND OF YOUR OWN UNIVERSE.
 
-Local-file playback is now wired through Expo Audio. The app can import audio files selected by the user and play them through the shared player service. Background playback and lock-screen capabilities are configured, but still require a native development build and device testing. The Flow feed currently uses user-imported local audio; it is not an online endless catalogue. The first permitted online source and LRCLIB lyrics lookup are now connected on `development`. Internet Archive results are user-uploaded and their licence metadata must be checked on the source page. YouTube is an official app/site hand-off, not in-app playback. Persistent library metadata, favourites and recent history are now saved on-device. Local audio file URIs are restored from saved metadata, but the app does not yet copy imported audio into a dedicated permanent app folder; if Android clears the picker cache, a local file may need to be imported again. Artist and album pages currently group the metadata available on tracks; full tag editing and automatic device library indexing are not implemented. Active EQ/DSP effects and cloud/social features are not implemented yet. Current product direction is a free-to-use, non-commercial, LastWave-inspired player; see `docs/LASTWAVE_INSPIRED_NONCOMMERCIAL_PLAN.md`. The selected licensed-catalogue architecture and rights checklist are documented in `docs/LICENSED_CATALOGUE_IMPLEMENTATION.md`. REELSONIC's initial EQ targets and native-engine integration gates are documented in `docs/REELSONIC_DSP.md`.
+**A futuristic, personal-first music experience.**  
+Immersive listening • Vertical Flow • Your library • Your sound
 
-## Setup when a computer is available
-Install Node.js 22.13 or newer, then clone this repository and run:
+<br/>
 
-    npm install
-    npx expo install --fix
-    npx expo-doctor
-    npx expo start
+[![Development](https://img.shields.io/badge/STATUS-DEVELOPMENT-ff6fae?style=for-the-badge&labelColor=160d1c)](https://github.com/smrutiranjandev0p/RHYTHM-E/tree/development)
+[![Expo SDK](https://img.shields.io/badge/EXPO-SDK%2058-9b7bff?style=for-the-badge&logo=expo&logoColor=white&labelColor=160d1c)](https://expo.dev/)
+[![React Native](https://img.shields.io/badge/REACT%20NATIVE-0.88-61dafb?style=for-the-badge&logo=react&logoColor=white&labelColor=160d1c)](https://reactnative.dev/)
+[![Platform](https://img.shields.io/badge/PLATFORM-ANDROID%20%7C%20iOS-bb8cff?style=for-the-badge&labelColor=160d1c)](#)
 
-Use Expo Go only if the installed Expo Go app supports SDK 58. For native audio, background playback and production features, create a development build with EAS.
+<br/>
 
-## Roadmap
-1. Local device audio access and playback.
-2. Background playback, lock-screen controls and queue.
-3. Optional online discovery using only authorised/public-domain/Creative Commons sources.
-4. Timed lyrics from an authorised lyrics provider.
-5. Accounts, playlists, favourites and cloud sync.
-6. QA, EAS builds and Play Store / App Store release.
+[ **EXPLORE THE PROJECT** ](https://github.com/smrutiranjandev0p/RHYTHM-E/tree/development)
+&nbsp; ◈ &nbsp;
+[ **FEATURE ROADMAP** ](docs/FEATURE_ROADMAP.md)
+&nbsp; ◈ &nbsp;
+[ **DSP ENGINE PLAN** ](docs/REELSONIC_DSP.md)
 
-## Rights
-Use only audio and lyrics for which RHYTHM E has the required rights. No Resso branding, proprietary assets or commercial music are bundled here.
+<br/>
 
-## Product roadmap
+*An independent music-player project with its own identity — inspired by the feeling of immersive, swipe-first music discovery.*
 
-See [docs/FEATURE_ROADMAP.md](docs/FEATURE_ROADMAP.md) for the product roadmap, [docs/LASTWAVE_INSPIRED_NONCOMMERCIAL_PLAN.md](docs/LASTWAVE_INSPIRED_NONCOMMERCIAL_PLAN.md) for the current free/non-commercial direction, and [docs/LICENSED_CATALOGUE_IMPLEMENTATION.md](docs/LICENSED_CATALOGUE_IMPLEMENTATION.md) for a possible future licensed-catalogue path.
+</div>
+
+---
+
+## ◉ 01 / THE VISION
+
+RHYTHM E is being built around one simple idea: **your music should feel like your space.**
+
+A premium dark interface, a vertical music Flow, a personal library and a sound-personalisation layer come together in one listening experience. The goal is to make moving between tracks, discovering music and returning to favourites feel fluid and immediate.
+
+> **Not another music clone. A listening universe with its own rhythm.**
+
+## ◉ 02 / EXPERIENCE MODULES
+
+| MODULE | WHAT IT DOES | CURRENT STATE |
+|:--|:--|:--:|
+| **FLOW** | Vertical, swipe-first listening feed with animated artwork, playback progress and favourites | In development |
+| **PLAYER CORE** | Shared playback queue, play/pause, skip, seek and automatic next track | Implemented; device QA pending |
+| **MY LIBRARY** | Import audio into private app storage; keep favourites and recent plays | Implemented; device QA pending |
+| **ARTIST / ALBUM SPACE** | Browse tracks by artist and album; edit title, artist and album metadata | Implemented; device QA pending |
+| **DISCOVER** | Mood-led discovery and permitted online audio search | Connected sources only |
+| **LYRICS** | LRCLIB lookup and timestamp-based synced-line highlighting when available | Connected; QA pending |
+| **SOUND LAB** | REELSONIC preset and equalizer interface, plus sleep timer | UI preview; DSP not active |
+| **INSIGHTS** | Recent listening and basic library insights | Prototype |
+| **YOUTUBE HAND-OFF** | Opens official YouTube search in the YouTube app or website | Implemented; no in-app audio |
+
+## ◉ 03 / THE VISUAL LANGUAGE
+
+<div align="center">
+
+| ◈ NEON PINK | ◈ DEEP VIOLET | ◈ NIGHT MODE |
+|:--:|:--:|:--:|
+| `#FF9CC4` | `#873E78` | `#160D1C` |
+| Energy & interaction | Depth & atmosphere | Focus & immersion |
+
+</div>
+
+The interface is designed around a dark, atmospheric canvas with vivid accent lighting, rounded surfaces, animated abstract artwork and a mobile-first layout.
+
+## ◉ 04 / SYSTEM ARCHITECTURE
+
+```mermaid
+flowchart TD
+    A["RHYTHM E App"] --> B["Expo Router Screens"]
+    B --> C["Flow / Discover / Search"]
+    B --> D["Library / Player / Sound Lab"]
+    C --> E["Permitted Music Sources"]
+    D --> F["Shared Audio Provider"]
+    F --> G["Expo Audio Playback"]
+    F --> H["AsyncStorage Persistence"]
+    H --> I["Tracks · Favourites · History"]
+    D --> J["LRCLIB Lyrics Lookup"]
+    D --> K["REELSONIC DSP Plan"]
+    K -. "Native audio graph migration + QA pending" .-> G
+```
+
+### Technology constellation
+
+| LAYER | TECHNOLOGY |
+|:--|:--|
+| Application | React Native 0.88 |
+| Framework | Expo SDK 58 |
+| Navigation | Expo Router |
+| Audio playback | Expo Audio |
+| Local persistence | AsyncStorage |
+| File storage | Expo FileSystem — app-private Documents directory |
+| Audio import | Expo Document Picker |
+| Lyrics | LRCLIB API |
+| Language | TypeScript |
+
+## ◉ 05 / QUICK START
+
+### Requirements
+
+- Node.js compatible with the installed Expo SDK
+- Git
+- Android device or emulator
+- Windows, macOS or Linux development computer
+
+### Clone the development branch
+
+```bash
+git clone --branch development --single-branch https://github.com/smrutiranjandev0p/RHYTHM-E.git
+cd RHYTHM-E
+```
+
+### Install dependencies
+
+```bash
+npm install
+```
+
+### Validate the project
+
+```bash
+npx expo install --check
+npx expo-doctor
+npm run typecheck
+```
+
+### Start the development server
+
+```bash
+npx expo start
+```
+
+**Native audio note:** Background playback and lock-screen behaviour must be verified in a native development build on a real device. Expo Go is not a substitute for validating the complete native audio experience. Do not treat a successful Metro start as proof that native playback works.
+
+## ◉ 06 / DEVELOPMENT ROADMAP
+
+| PHASE | MILESTONE | STATUS |
+|:--:|:--|:--:|
+| 01 | App foundation, navigation and visual identity | Built |
+| 02 | Shared player, local library and persistence | Implemented; QA pending |
+| 03 | Vertical Flow, discovery, lyrics and library browsing | Implemented in part; QA pending |
+| 04 | Permanent audio storage and editable metadata | Added; QA pending |
+| 05 | Native REELSONIC EQ / DSP engine | Planned |
+| 06 | Playback reliability, accessibility and performance | Pending |
+| 07 | Release builds and store-readiness checks | Pending |
+
+The detailed plan and validation gates live in [FEATURE_ROADMAP.md](docs/FEATURE_ROADMAP.md).
+
+## ◉ 07 / IMPORTANT ENGINEERING NOTES
+
+- **Local files:** Audio selected by the user is copied into RHYTHM E's private app Documents storage. Clearing app data or uninstalling the app removes those private copies.
+- **Older imports:** The app attempts to migrate older picker-cache tracks on startup when their original files are still accessible.
+- **Persistence:** Track metadata, favourites and recent listening history are stored on-device. Restoring a selected track does not automatically start playback.
+- **REELSONIC:** The equalizer controls and preset curves are currently design previews. No EQ, compressor, limiter or loudness processing is active in playback.
+- **Online music:** Search results depend on the source and its terms. Internet Archive licence metadata is uploader-provided and must be checked on the source page; it is not independent rights verification.
+- **YouTube:** RHYTHM E opens official YouTube search. It does not extract, relay, download or cache YouTube audio.
+- **Testing:** Dependency checks, typechecking, native builds and physical-device playback must be completed before calling this release-ready.
+
+## ◉ 08 / MUSIC RIGHTS & RESPONSIBLE ACCESS
+
+RHYTHM E is intended as a free-to-use, non-commercial project. That intention does not grant rights to copyrighted recordings or override a provider's terms.
+
+The project should use:
+- User-selected audio files the user is entitled to play.
+- Public-domain recordings.
+- Creative Commons recordings whose specific licence permits the intended use.
+- Official integrations and authorised music providers.
+
+No unauthorised stream extraction, DRM circumvention, private API scraping or unauthorised downloading/caching is part of this project.
+
+See:
+- [Free / non-commercial product direction](docs/LASTWAVE_INSPIRED_NONCOMMERCIAL_PLAN.md)
+- [Licensed catalogue implementation notes](docs/LICENSED_CATALOGUE_IMPLEMENTATION.md)
+- [REELSONIC DSP engineering plan](docs/REELSONIC_DSP.md)
+
+## ◉ 09 / CONTRIBUTION & DEVELOPMENT RULES
+
+RHYTHM E is actively evolving. Before proposing changes:
+
+1. Work on the `development` branch.
+2. Keep `main` stable; do not merge without release checks.
+3. Preserve the shared audio queue and playback state.
+4. Keep rights, attribution and provider restrictions explicit.
+5. Never label a preview control as a working audio feature.
+6. Include device-test notes for native audio changes.
+
+## ◉ 10 / PROJECT STATUS
+
+<div align="center">
+
+### BUILT WITH INTENTION. TESTED WITH CARE. DESIGNED TO FEEL DIFFERENT.
+
+**RHYTHM E** &nbsp; ◈ &nbsp; *Find your frequency.*
+
+<sub>Independent project • Development branch • November 2026</sub>
+
+</div>
