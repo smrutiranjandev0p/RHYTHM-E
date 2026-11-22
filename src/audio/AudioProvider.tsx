@@ -1,6 +1,7 @@
 import React,{createContext,useContext,useEffect,useMemo,useRef,useState} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {createAudioPlayer,setAudioModeAsync,useAudioPlayerStatus} from "expo-audio";
+import {isManagedAudio,migrateImportedAudio} from "./libraryStorage";
 
 export type LocalTrack={id:string;name:string;uri:string;artist:string;album?:string;source?:"Internet Archive"|"Local";license?:string;itemUrl?:string};
 type PersistedMusic={tracks:LocalTrack[];favorites:string[];recentTracks:LocalTrack[];activeTrackId:string|null};
@@ -28,11 +29,16 @@ export function AudioProvider({children}:{children:React.ReactNode}){
 
  useEffect(()=>{
   let mounted=true;
-  AsyncStorage.getItem(STORAGE_KEY).then(raw=>{
+  AsyncStorage.getItem(STORAGE_KEY).then(async raw=>{
    if(!raw||!mounted)return;
    try{
     const saved=JSON.parse(raw) as Partial<PersistedMusic>;
-    const restored=Array.isArray(saved.tracks)?saved.tracks.filter(t=>t&&typeof t.uri==="string"&&typeof t.id==="string"):[];
+    let restored=Array.isArray(saved.tracks)?saved.tracks.filter(t=>t&&typeof t.uri==="string"&&typeof t.id==="string"):[];
+    restored=await Promise.all(restored.map(async track=>{
+     if(track.source!=="Local"||isManagedAudio(track.uri))return track;
+     try{return {...track,uri:await migrateImportedAudio(track.uri,track.id,track.name)};}catch{return track;}
+    }));
+    if(!mounted)return;
     setTracks(restored);
     setFavorites(Array.isArray(saved.favorites)?saved.favorites.filter(x=>typeof x==="string"):[]);
     setRecentTracks(Array.isArray(saved.recentTracks)?saved.recentTracks.filter(t=>t&&typeof t.uri==="string").slice(0,50):[]);
