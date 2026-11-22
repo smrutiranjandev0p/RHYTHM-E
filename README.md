@@ -9,14 +9,14 @@ A cross-platform music app inspired by immersive listening and social discovery,
 - Device audio file import through the system picker
 - Shared Expo Audio playback service with background audio and lock-screen configuration
 - Local library queue, play/pause, previous/next and 15-second seek controls
-- Sound Lab, app settings and listening insights prototype screens
+- Sound Lab with REELSONIC preset preview (DSP not active yet), app settings and listening insights prototype screens
 - Full-screen player with native local-file playback controls
 - Resso-inspired vertical Flow feed: swipe between local tracks, animated abstract artwork, progress display, favourites and automatic next-track playback
 - Persistent mini-player above navigation (hidden in immersive Flow mode)
 - Android and iOS app configuration
 - Expo SDK 58 / React Native 0.88 project manifest
 
-Local-file playback is now wired through Expo Audio. The app can import audio files selected by the user and play them through the shared player service. Background playback and lock-screen capabilities are configured, but still require a native development build and device testing. The Flow feed currently uses user-imported local audio; it is not an online endless catalogue. Streaming catalogue, EQ/DSP effects, synced lyrics and cloud/social features are not implemented yet.
+Local-file playback is now wired through Expo Audio. The app can import audio files selected by the user and play them through the shared player service. Background playback and lock-screen capabilities are configured, but still require a native development build and device testing. The Flow feed currently uses user-imported local audio; it is not an online endless catalogue. Streaming catalogue, active EQ/DSP effects, synced lyrics and cloud/social features are not implemented yet. REELSONIC's initial EQ targets and native-engine integration gates are documented in `docs/REELSONIC_DSP.md`.
 
 ## Setup when a computer is available
 Install Node.js 22.13 or newer, then clone this repository and run:
