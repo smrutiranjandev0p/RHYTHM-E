@@ -27,6 +27,8 @@ export function AudioProvider({children}:{children:React.ReactNode}){
  const skipNext=()=>{if(tracks.length)playTrack((activeIndex+1+tracks.length)%tracks.length);};
  const skipPrevious=()=>{if(tracks.length)playTrack((activeIndex-1+tracks.length)%tracks.length);};
  const seekTo=(seconds:number)=>{player.seekTo(Math.max(0,Math.min(seconds,status.duration||0)));};
+ // Advance automatically when the current local track reaches its end.
+ useEffect(()=>{if(status.didJustFinish&&activeIndex>=0&&activeIndex<tracks.length-1){playTrack(activeIndex+1);}},[status.didJustFinish,activeIndex,tracks.length]);
  const value=useMemo(()=>({tracks,activeIndex,activeTrack,status,addTracks,playTrack,togglePlayback,skipNext,skipPrevious,seekTo}),[tracks,activeIndex,activeTrack,status]);
  return <AudioContext.Provider value={value}>{children}</AudioContext.Provider>;
 }
