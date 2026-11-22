@@ -125,3 +125,15 @@ Keep the current player intact until a candidate audio engine proves:
 - No LastWave source code or assets have been copied as part of this plan.
 - Existing RHYTHM E local-file playback and Flow remain the working intended sources until native builds are tested.
 - No unrestricted commercial catalogue, stream extraction, cloud backend or active REELSONIC DSP has been implemented.
+
+
+## Implementation update — November 2026
+
+The RHYTHM E `development` branch now has a first permitted free-source path:
+- Internet Archive Advanced Search discovers audio items, then item metadata is fetched and filtered to Creative Commons Attribution / Attribution-ShareAlike / Attribution-NonCommercial / Attribution-NonCommercial-ShareAlike and Public Domain Mark/Zero licence URL patterns.
+- Playback uses the existing Expo Audio player and shared queue; each result exposes its source item and declared licence for review.
+- LRCLIB provides lyrics lookup and timestamped line highlighting when synced lyrics are returned.
+- YouTube search is handed off to the official YouTube app/site. This is deliberately not stream extraction or in-app audio relaying.
+- Flow favourites are shared with Library in the current session.
+
+Caveats: Internet Archive metadata is supplied by uploaders and is not an independent rights audit; users must review each item's source page and licence. Persistent playlists/favourites, a native YouTube player, active REELSONIC DSP, and verified background playback are still pending. No typecheck, native build, or physical-device test was performed during this update.
