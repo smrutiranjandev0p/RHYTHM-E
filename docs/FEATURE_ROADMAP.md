@@ -101,3 +101,16 @@ Still not complete or validated:
 - Background playback and lock-screen controls are configured but need an Android development build and physical-device testing.
 - No build, typecheck, or device test was run as part of this phone-only GitHub update.
 \n\n## Library persistence and artist/album browsing — November 2026\n\nImplemented on `development`:\n- Added AsyncStorage-backed persistence for track metadata, favourites, recent plays and the last selected track.\n- Restores the selected track and lock-screen metadata on app launch without automatically starting audio.\n- Added Library artist and album groupings with dedicated artist and album track-list pages. Album groupings use available metadata and place tracks without an album tag under `Singles`.\n- Added a player queue drawer and connected Sound Lab sleep timer to the shared playback service.\n\nLimitations to address during laptop QA: imported audio file URIs currently reference the document-picker cache and are not copied into permanent app-managed storage. If Android evicts that cache, the track metadata can remain while its audio file is unavailable; re-import may be required. AsyncStorage package installation, dependency resolution, typecheck, native build and device playback still need verification. Artist and album pages are metadata-based views, not a full tag editor or remote artist catalogue.\n
+
+## Permanent audio storage and editable tags — November 2026
+
+Implemented on `development`:
+- Added `expo-file-system` SDK 58 integration using the app's private Documents directory.
+- User-selected local audio is copied into `Documents/rhythm-e-library` before its track record is added to the library. Playback points to the app-managed copy rather than the document picker's temporary cache.
+- Added an in-app metadata editor for track title, artist and album. Changes update the persisted library record and recent-history entries.
+- Files remain private to the app sandbox; they are not uploaded or made public. They may be removed when the app is uninstalled or its app data is cleared.
+
+Still required:
+- Verify file copying, playback after force-stop/relaunch, large-file behaviour, low-storage errors and app reinstall behaviour on physical Android/iOS devices.
+- Add deletion/cleanup UI and metadata extraction/tag writing if desired.
+- REELSONIC DSP is not activated. Expo Audio does not provide an insertable signal graph. The next engine candidate is React Native Audio API with five biquad filters, but changing the playback engine must preserve queue, seek, background audio and lock-screen controls. This migration requires a native development build and device QA; do not mark the EQ active before that is complete.
