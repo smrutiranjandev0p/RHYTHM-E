@@ -1,3 +1,5 @@
+> **Status note (22 November 2026):** This is an alternative future expansion plan, not the current product direction. The current choice is a free-to-use, non-commercial LastWave-inspired player. See `docs/LASTWAVE_INSPIRED_NONCOMMERCIAL_PLAN.md`. Do not begin commercial catalogue integration unless the owner explicitly changes direction and the required rights and funding are available.
+
 # RHYTHM E — Licensed music catalogue implementation plan
 
 ## Product decision
