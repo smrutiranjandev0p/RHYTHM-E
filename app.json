@@ -1,1 +1,33 @@
-{"expo":{"name":"RHYTHM E","slug":"rhythm-e","scheme":"rhythme","version":"1.0.0","orientation":"portrait","userInterfaceStyle":"dark","ios":{"supportsTablet":true,"bundleIdentifier":"com.rhythme.musicapp"},"android":{"package":"com.rhythme.musicapp","edgeToEdgeEnabled":true},"plugins":["expo-router"],"experiments":{"typedRoutes":true}}}
+{
+  "expo": {
+    "name": "RHYTHM E",
+    "slug": "rhythm-e",
+    "scheme": "rhythme",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.rhythme.musicapp"
+    },
+    "android": {
+      "package": "com.rhythme.musicapp",
+      "edgeToEdgeEnabled": true
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-audio",
+        {
+          "enableBackgroundPlayback": true,
+          "enableBackgroundRecording": false,
+          "recordAudioAndroid": false,
+          "microphonePermission": false
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
