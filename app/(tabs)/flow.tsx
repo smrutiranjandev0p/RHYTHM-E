@@ -11,7 +11,7 @@ export default function FlowScreen(){
  const {tracks,activeIndex,activeTrack,status,playTrack,togglePlayback}=useAudio();
  const [page,setPage]=useState(Math.max(0,activeIndex));const [favorites,setFavorites]=useState<string[]>([]);
  const scroll=useRef<ScrollView>(null);const pulse=useRef(new Animated.Value(0)).current;const rotation=useRef(new Animated.Value(0)).current;
- const pageHeight=Math.max(440,height-160);
+ const pageHeight=Math.max(480,height-65);
  useEffect(()=>{const animation=Animated.loop(Animated.sequence([Animated.timing(pulse,{toValue:1,duration:1900,useNativeDriver:true}),Animated.timing(pulse,{toValue:0,duration:1900,useNativeDriver:true})]));animation.start();return()=>animation.stop();},[pulse]);
  useEffect(()=>{const animation=Animated.loop(Animated.timing(rotation,{toValue:1,duration:18000,useNativeDriver:true}));animation.start();return()=>animation.stop();},[rotation]);
  useEffect(()=>{if(tracks.length&&activeIndex<0){playTrack(0);}else if(activeIndex>=0){setPage(activeIndex);scroll.current?.scrollTo({y:activeIndex*pageHeight,animated:true});}},[activeIndex,tracks.length]);
@@ -29,7 +29,7 @@ export default function FlowScreen(){
      <Animated.View style={[s.orbOne,{transform:[{rotate:rotation.interpolate({inputRange:[0,1],outputRange:["0deg","360deg"]})},{scale:pulse.interpolate({inputRange:[0,1],outputRange:[0.92,1.08]})}]}]}/>
      <Animated.View style={[s.orbTwo,{transform:[{rotate:rotation.interpolate({inputRange:[0,1],outputRange:["360deg","0deg"]})},{scale:pulse.interpolate({inputRange:[0,1],outputRange:[1.08,0.92]})}]}]}/>
      <View style={s.artCore}><MaterialCommunityIcons name={symbols[index%symbols.length] as any} size={105} color="#FFFFFFE8"/></View>
-     <Text style={s.artLabel}>RHYTHM E • LOCAL SESSION</Text>
+     <Text style={s.artLabel}>RHYTHM E • FLOW SESSION</Text>
      <View style={s.artTop}><Text style={s.artTag}>NOW PLAYING</Text><Text style={s.artIndex}>{String(index+1).padStart(2,"0")} / {String(tracks.length).padStart(2,"0")}</Text></View>
     </View>
     <View style={s.trackInfo}><View style={{flex:1}}><Text style={s.trackName} numberOfLines={2}>{track.name}</Text><Text style={s.artist}>{track.artist}</Text></View><TouchableOpacity onPress={()=>toggleFavorite(track.id)} style={s.iconButton}><MaterialCommunityIcons name={liked?"heart":"heart-outline"} size={26} color={liked?"#FF8DBB":"#FFF"}/></TouchableOpacity><TouchableOpacity onPress={()=>router.push("/lyrics/"+track.id)} style={s.iconButton}><MaterialCommunityIcons name="text-box-outline" size={25} color="#FFF"/></TouchableOpacity></View>
