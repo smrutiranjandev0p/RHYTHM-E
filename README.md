@@ -2,21 +2,25 @@
 
 A cross-platform music app inspired by immersive listening and social discovery, with original branding and design.
 
-## Current status — Milestone 1
+## Current status — Milestone 2 (implementation in progress)
 - Premium dark home screen
 - Home, Discover, Library and Profile tabs
 - Mood discovery chips and demo track list
-- Full-screen player preview
+- Device audio file import through the system picker
+- Shared Expo Audio playback service with background audio and lock-screen configuration
+- Local library queue, play/pause, previous/next and 15-second seek controls
+- Sound Lab, app settings and listening insights prototype screens
+- Full-screen player with native local-file playback controls
 - Android and iOS app configuration
 - Expo SDK 58 / React Native 0.88 project manifest
 
-This is a UI/navigation prototype. Player controls are not connected to audio playback yet.
+Local-file playback is now wired through Expo Audio. The app can import audio files selected by the user and play them through the shared player service. Background playback and lock-screen capabilities are configured, but still require a native development build and device testing. Streaming catalogue, EQ/DSP effects, synced lyrics and cloud/social features are not implemented yet.
 
 ## Setup when a computer is available
 Install Node.js 22.13 or newer, then clone this repository and run:
 
     npm install
-    npx expo install expo-linking expo-constants expo-font expo-splash-screen react-native-safe-area-context react-native-screens
+    npx expo install --fix
     npx expo install --fix
     npx expo-doctor
     npx expo start
