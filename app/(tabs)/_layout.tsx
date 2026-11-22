@@ -1,11 +1,11 @@
-import {Tabs,useRouter} from "expo-router";
+import {Tabs,useRouter,useSegments} from "expo-router";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {StyleSheet,Text,TouchableOpacity,View} from "react-native";
 import {useAudio} from "../../src/audio/AudioProvider";
 
 function MiniPlayer(){
- const router=useRouter();const {activeTrack,status,togglePlayback}=useAudio();
- if(!activeTrack)return null;
+ const router=useRouter();const segments=useSegments();const {activeTrack,status,togglePlayback}=useAudio();
+ if(!activeTrack||segments.includes("flow"))return null;
  return <TouchableOpacity activeOpacity={0.92} style={s.mini} onPress={()=>router.push("/player/local")}>
   <View style={s.miniArt}><MaterialCommunityIcons name="music-note" size={19} color="#FFF"/></View>
   <View style={{flex:1}}><Text style={s.miniTitle} numberOfLines={1}>{activeTrack.name}</Text><Text style={s.miniArtist} numberOfLines={1}>{activeTrack.artist}</Text></View>
