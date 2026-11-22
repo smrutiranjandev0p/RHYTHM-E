@@ -8,13 +8,20 @@ A cross-platform music app inspired by immersive listening and social discovery,
 - Mood discovery chips and demo track list
 - Full-screen player preview
 - Android and iOS app configuration
+- Expo SDK 58 / React Native 0.88 project manifest
 
 This is a UI/navigation prototype. Player controls are not connected to audio playback yet.
 
 ## Setup when a computer is available
-Install Node.js LTS. Create an Expo Router tabs project with the current supported Expo SDK, then merge this repository's app folder and configuration files into it. Install Expo Router, Expo Status Bar and Expo Vector Icons using the Expo installer, then start the development server.
+Install Node.js 22.13 or newer, then clone this repository and run:
 
-Use Expo Go for initial UI checks. Native audio, background playback and production functionality will require a development build.
+    npm install
+    npx expo install expo-linking expo-constants expo-font expo-splash-screen react-native-safe-area-context react-native-screens
+    npx expo install --fix
+    npx expo-doctor
+    npx expo start
+
+Use Expo Go only if the installed Expo Go app supports SDK 58. For native audio, background playback and production features, create a development build with EAS.
 
 ## Roadmap
 1. Local device audio access and playback.
