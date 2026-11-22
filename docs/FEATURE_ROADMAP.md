@@ -100,7 +100,18 @@ Still not complete or validated:
 - REELSONIC controls remain design/preset UI only; no actual audio DSP is active. Sleep timer is connected to playback.
 - Background playback and lock-screen controls are configured but need an Android development build and physical-device testing.
 - No build, typecheck, or device test was run as part of this phone-only GitHub update.
-\n\n## Library persistence and artist/album browsing — November 2026\n\nImplemented on `development`:\n- Added AsyncStorage-backed persistence for track metadata, favourites, recent plays and the last selected track.\n- Restores the selected track and lock-screen metadata on app launch without automatically starting audio.\n- Added Library artist and album groupings with dedicated artist and album track-list pages. Album groupings use available metadata and place tracks without an album tag under `Singles`.\n- Added a player queue drawer and connected Sound Lab sleep timer to the shared playback service.\n\nLimitations to address during laptop QA: verify copying and playback after force-stop/relaunch, large-file behaviour and low-storage errors. Old picker-cache tracks are migrated on startup only when their source files are still accessible. Artist and album pages are metadata-based views, not a remote artist catalogue.\n
+
+
+## Library persistence and artist/album browsing — November 2026
+
+Implemented on `development`:
+- Added AsyncStorage-backed persistence for track metadata, favourites, recent plays and the last selected track.
+- Restores the selected track and lock-screen metadata on app launch without automatically starting audio.
+- Added Library artist and album groupings with dedicated artist and album track-list pages. Album groupings use available metadata and place tracks without an album tag under `Singles`.
+- Added a player queue drawer and connected Sound Lab sleep timer to the shared playback service.
+
+Limitations to address during laptop QA: verify copying and playback after force-stop/relaunch, large-file behaviour and low-storage errors. Old picker-cache tracks are migrated on startup only when their source files are still accessible. Artist and album pages are metadata-based views, not a remote artist catalogue.
+
 
 ## Permanent audio storage and editable tags — November 2026
 
