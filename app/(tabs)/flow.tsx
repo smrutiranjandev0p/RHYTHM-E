@@ -8,7 +8,7 @@ const palettes=["#8E3D68","#51417D","#276A68","#A85A36","#3E587E","#7255A5"];
 const symbols=["waveform","music-note","headphones","music-clef-treble","equalizer","audio-video"];
 export default function FlowScreen(){
  const router=useRouter();const {height}=useWindowDimensions();
- const {tracks,activeIndex,activeTrack,status,playTrack,togglePlayback,favorites,toggleFavorite}=useAudio();
+ const {tracks,activeIndex,status,playTrack,togglePlayback,favorites,toggleFavorite}=useAudio();
  const [page,setPage]=useState(Math.max(0,activeIndex));
  const scroll=useRef<ScrollView>(null);const pulse=useRef(new Animated.Value(0)).current;const rotation=useRef(new Animated.Value(0)).current;
  const pageHeight=Math.max(480,height-65);
@@ -17,7 +17,6 @@ export default function FlowScreen(){
  useEffect(()=>{if(tracks.length&&activeIndex<0){playTrack(0);}else if(activeIndex>=0){setPage(activeIndex);scroll.current?.scrollTo({y:activeIndex*pageHeight,animated:true});}},[activeIndex,tracks.length]);
  const onEnd=(event:NativeSyntheticEvent<NativeScrollEvent>)=>{const next=Math.max(0,Math.min(tracks.length-1,Math.round(event.nativeEvent.contentOffset.y/pageHeight)));setPage(next);if(next!==activeIndex)playTrack(next);};
  const go=(index:number)=>{if(!tracks.length)return;const next=Math.max(0,Math.min(tracks.length-1,index));scroll.current?.scrollTo({y:next*pageHeight,animated:true});setPage(next);if(next!==activeIndex)playTrack(next);};
- const toggleFavorite=(id:string)=>setFavorites(old=>old.includes(id)?old.filter(x=>x!==id):[...old,id]);
  const current=tracks[page];const isFavorite=!!current&&favorites.includes(current.id);
  const percent=activeIndex===page&&status.duration>0?Math.min(100,Math.max(0,status.currentTime/status.duration*100)):0;
  if(!tracks.length)return <View style={s.emptyScreen}><View style={s.top}><Text style={s.kicker}>RHYTHM E FLOW</Text><MaterialCommunityIcons name="gesture-swipe-vertical" size={24} color="#FF9CC4"/></View><View style={s.emptyArt}><MaterialCommunityIcons name="waveform" size={75} color="#FFE1ED"/></View><Text style={s.emptyTitle}>Swipe into your sound.</Text><Text style={s.emptyText}>Your vertical music feed is ready. Import songs from your phone and swipe up or down to move between tracks.</Text><TouchableOpacity style={s.import} onPress={()=>router.push("/library")}><MaterialCommunityIcons name="folder-music" size={20} color="#FFF"/><Text style={s.importText}>Open your Library</Text></TouchableOpacity><Text style={s.hint}>UP NEXT. DOWN PREVIOUS. YOUR MUSIC, YOUR FLOW.</Text></View>;
