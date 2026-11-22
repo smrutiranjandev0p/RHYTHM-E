@@ -71,4 +71,4 @@ LastWave-Native is GPL-3.0 licensed and its README describes it as a non-commerc
 
 ## Current status
 
-The current branch contains the first UI prototype. The player and lyrics are demo screens; there is not yet a production audio engine, streaming catalogue, synced lyric provider, local scanner, EQ, or social listening backend. These must be implemented and tested before being advertised as available.
+Implemented on `development`: a shared Expo Audio player service, user-selected local audio file import, local queue, play/pause/skip/seek controls, and native background playback / lock-screen configuration. Sound Lab, app settings, listening insights, and lyrics remain interface prototypes. No online streaming catalogue, synced lyrics provider, real DSP equalizer, social listening backend, or cloud sync is implemented yet. The native audio path has not yet been built or tested on a physical device; validate it with a development build before release.
