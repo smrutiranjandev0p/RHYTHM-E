@@ -3,7 +3,8 @@ import {useRouter} from "expo-router";
 import * as DocumentPicker from "expo-document-picker";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {ActivityIndicator,Alert,ScrollView,StyleSheet,Text,TouchableOpacity,View} from "react-native";
-import {useAudio,LocalTrack} from "../../src/audio/AudioProvider";
+import {useAudio} from "../../src/audio/AudioProvider";
+import type {LocalTrack} from "../../src/audio/AudioProvider";
 
 export default function LibraryScreen(){
  const router=useRouter();const {tracks,activeIndex,playTrack,status,addTracks}=useAudio();const [loading,setLoading]=useState(false);
