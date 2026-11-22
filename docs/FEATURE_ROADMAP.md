@@ -14,7 +14,7 @@ RHYTHM E combines the social, expressive, mood-led listening experience users ex
 
 | Feature | Product value | Priority | Implementation path |
 |---|---|---:|---|
-| Mood-led discovery, mixes, artist/album pages | Core Resso-like experience | P0 | App UI + catalogue/search service |
+| Mood-led discovery, vertical swipe-to-play Flow feed, mixes, artist/album pages | Core Resso-like experience | P0 | App UI + catalogue/search service |
 | Full player, queue, background playback, lock-screen controls | Reliable listening foundation | P0 | Native audio engine + media session |
 | Synced lyrics, translation, romanization | Sing-along and accessibility | P1 | Licensed/authorized lyrics provider + timestamp sync |
 | Local library scan, metadata, artwork, offline cache | User-owned music collection | P1 | Android/iOS media permissions + local database |
@@ -71,4 +71,4 @@ LastWave-Native is GPL-3.0 licensed and its README describes it as a non-commerc
 
 ## Current status
 
-Implemented on `development`: a shared Expo Audio player service, user-selected local audio file import, local queue, play/pause/skip/seek controls, and native background playback / lock-screen configuration. Sound Lab, app settings, listening insights, and lyrics remain interface prototypes. No online streaming catalogue, synced lyrics provider, real DSP equalizer, social listening backend, or cloud sync is implemented yet. The native audio path has not yet been built or tested on a physical device; validate it with a development build before release.
+Implemented on `development`: five-tab navigation with Search and Flow, persistent mini-player, a vertical swipe-to-play local music feed with animated abstract artwork, progress display and in-session favourites, automatic next-track playback, shared Expo Audio player service, user-selected local audio import, local queue, play/pause/skip/seek controls, and native background playback / lock-screen configuration. Flow currently browses only imported local tracks; an online catalogue, personalized recommendations and persistent favourites are not implemented. Sound Lab, app settings, listening insights, and lyrics remain interface prototypes. No online streaming catalogue, synced lyrics provider, real DSP equalizer, social listening backend, or cloud sync is implemented yet. The native audio path has not yet been built or tested on a physical device; validate it with a development build before release.
