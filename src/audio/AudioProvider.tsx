@@ -38,6 +38,7 @@ export function AudioProvider({children}:{children:React.ReactNode}){
     setRecentTracks(Array.isArray(saved.recentTracks)?saved.recentTracks.filter(t=>t&&typeof t.uri==="string").slice(0,50):[]);
     const active=saved.activeTrackId?restored.findIndex(t=>t.id===saved.activeTrackId):-1;
     setActiveIndex(active);
+    if(active>=0){const track=restored[active];player.replace({uri:track.uri,name:track.name});player.setActiveForLockScreen(true,{title:track.name,artist:track.artist,albumTitle:track.album||"RHYTHM E"});}
    }catch{ /* Ignore damaged saved data and start with an empty library. */ }
   }).catch(()=>{}).finally(()=>{if(mounted)setStorageReady(true);});
   return ()=>{mounted=false;};
