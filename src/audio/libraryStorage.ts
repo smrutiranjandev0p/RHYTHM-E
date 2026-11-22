@@ -21,6 +21,14 @@ export async function copyImportedAudioToLibrary(sourceUri:string,trackId:string
  return destination.uri;
 }
 
+export function isManagedAudio(uri:string):boolean{return uri.startsWith(musicDirectory.uri);}
+
+export async function migrateImportedAudio(sourceUri:string,trackId:string,trackName:string):Promise<string>{
+ const source=new File(sourceUri);
+ const originalName=source.name||trackName+".audio";
+ return copyImportedAudioToLibrary(sourceUri,trackId,originalName);
+}
+
 export function deleteManagedAudio(uri:string):void{
  try{
   const file=new File(uri);
