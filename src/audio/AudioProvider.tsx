@@ -55,7 +55,11 @@ export function AudioProvider({children}:{children:React.ReactNode}){
   return ()=>{if(sleepTimeout.current)clearTimeout(sleepTimeout.current);player.clearLockScreenControls();player.remove();};
  },[player]);
 
- const updateTrack=(id:string,changes:Partial<Pick<LocalTrack,"name"|"artist"|"album">>)=>{\n  setTracks(old=>old.map(track=>track.id===id?{...track,...changes}:track));\n  setRecentTracks(old=>old.map(track=>track.id===id?{...track,...changes}:track));\n };\n const addTracks=(incoming:LocalTrack[])=>setTracks(old=>{
+ const updateTrack=(id:string,changes:Partial<Pick<LocalTrack,"name"|"artist"|"album">>)=>{
+  setTracks(old=>old.map(track=>track.id===id?{...track,...changes}:track));
+  setRecentTracks(old=>old.map(track=>track.id===id?{...track,...changes}:track));
+ };
+ const addTracks=(incoming:LocalTrack[])=>setTracks(old=>{
   const seen=new Set(old.map(t=>t.uri));
   return [...old,...incoming.filter(t=>!seen.has(t.uri))];
  });
