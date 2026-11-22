@@ -1,0 +1,3 @@
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+export default function RootLayout(){return <><StatusBar style="light" backgroundColor="#0B0912"/><Stack screenOptions={{headerShown:false,contentStyle:{backgroundColor:"#0B0912"}}}><Stack.Screen name="(tabs)"/><Stack.Screen name="player/[id]" options={{presentation:"card",animation:"slide_from_bottom"}}/></Stack></>}
