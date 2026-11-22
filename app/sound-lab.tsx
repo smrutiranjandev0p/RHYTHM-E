@@ -1,6 +1,7 @@
 import {useState} from "react";
 import {useRouter} from "expo-router";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
+import {useAudio} from "../src/audio/AudioProvider";
 import {ScrollView,StyleSheet,Text,TouchableOpacity,View} from "react-native";
 
 const presets=["REELSONIC Original","REELSONIC Bass","REELSONIC Vocal","REELSONIC Air","Warm","Custom"];
@@ -9,6 +10,7 @@ const timers=["Off","15 min","30 min","45 min","60 min"];
 
 export default function SoundLabScreen(){
  const router=useRouter();
+ const {setSleepTimer,cancelSleepTimer,sleepTimerEndsAt}=useAudio();
  const [preset,setPreset]=useState("Balanced");
  const [levels,setLevels]=useState([0,0,0,0,0]);
  const [bass,setBass]=useState(false);
@@ -37,8 +39,9 @@ export default function SoundLabScreen(){
   <View style={s.sectionHead}><Text style={s.sectionTitle}>Listening preferences</Text></View>
   <View style={s.panel}>
    <Text style={s.optionTitle}>Streaming quality preference</Text><View style={s.optionRow}>{["Data saver","Normal","High","Lossless"].map(q=><TouchableOpacity key={q} onPress={()=>setQuality(q)} style={[s.quality,{backgroundColor:quality===q?"#FF75AB":"#332338"}]}><Text style={[s.qualityText,{color:quality===q?"#28111E":"#E6D4E8"}]}>{q}</Text></TouchableOpacity>)}</View>
-   <View style={s.separator}/><Text style={s.optionTitle}>Sleep timer</Text><View style={s.optionRow}>{timers.map(t=><TouchableOpacity key={t} onPress={()=>setTimer(t)} style={[s.timer,{backgroundColor:timer===t?"#FF75AB":"#332338"}]}><Text style={[s.qualityText,{color:timer===t?"#28111E":"#E6D4E8"}]}>{t}</Text></TouchableOpacity>)}</View>
+   <View style={s.separator}/><Text style={s.optionTitle}>Sleep timer</Text><View style={s.optionRow}>{timers.map(t=><TouchableOpacity key={t} onPress={()=>{setTimer(t);if(t==="Off")cancelSleepTimer();else setSleepTimer(Number.parseInt(t,10));}} style={[s.timer,{backgroundColor:timer===t?"#FF75AB":"#332338"}]}><Text style={[s.qualityText,{color:timer===t?"#28111E":"#E6D4E8"}]}>{t}</Text></TouchableOpacity>)}</View>
   </View>
+  {sleepTimerEndsAt&&<Text style={s.hint}>Sleep timer active — playback will pause automatically.</Text>}
   <View style={s.notice}><MaterialCommunityIcons name="information-outline" size={17} color="#FF9CC4"/><Text style={s.noticeText}>REELSONIC is not active yet: these controls currently change only the on-screen preview and do not process playback. Expo Audio does not expose the signal-processing graph needed to apply these EQ bands to its player. The next engineering step is a dedicated audio graph with native playback, background controls and safe output headroom. No loudness boost will be enabled until limiter and clipping behaviour are validated on real devices. Quality options depend on a future licensed music provider.</Text></View>
   <View style={{height:28}}/>
  </ScrollView>
