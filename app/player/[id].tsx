@@ -1,21 +1,24 @@
 import {useLocalSearchParams,useRouter} from "expo-router";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
-import {StyleSheet,Text,TouchableOpacity,View} from "react-native";
+import {ScrollView,StyleSheet,Text,TouchableOpacity,View} from "react-native";
 import {useAudio} from "../../src/audio/AudioProvider";
 
 const clock=(n:number)=>{if(!Number.isFinite(n))return "0:00";const m=Math.floor(n/60);const sec=Math.floor(n%60);return m+":"+String(sec).padStart(2,"0");};
 export default function PlayerScreen(){
- const {id}=useLocalSearchParams<{id:string}>();const router=useRouter();const {activeTrack,status,togglePlayback,skipNext,skipPrevious,seekTo}=useAudio();
+ const {id}=useLocalSearchParams<{id:string}>();const router=useRouter();const {tracks,activeIndex,activeTrack,status,togglePlayback,skipNext,skipPrevious,seekTo,toggleFavorite,favorites,playTrack}=useAudio();
+ const [showQueue,setShowQueue]=useState(false);
+ const liked=!!activeTrack&&favorites.includes(activeTrack.id);
  const hasTrack=!!activeTrack;const title=activeTrack?.name||(id==="featured"?"The Midnight Edit":String(id||"Your track").replace(/-/g," "));
  const duration=status.duration||0;const progress=duration>0?Math.min(100,status.currentTime/duration*100):0;
  return <View style={s.screen}>
-  <View style={s.header}><TouchableOpacity onPress={()=>router.back()} style={s.back}><MaterialCommunityIcons name="chevron-down" size={28} color="#FFF"/></TouchableOpacity><Text style={s.headerText}>{hasTrack?"NOW PLAYING":"PLAYER PREVIEW"}</Text><TouchableOpacity onPress={()=>router.push({pathname:"/lyrics/[id]",params:{id:String(id||"midnight-drive")}})}><MaterialCommunityIcons name="text" size={23} color="#FFF"/></TouchableOpacity></View>
+  <View style={s.header}><TouchableOpacity onPress={()=>router.back()} style={s.back}><MaterialCommunityIcons name="chevron-down" size={28} color="#FFF"/></TouchableOpacity><Text style={s.headerText}>{hasTrack?"NOW PLAYING":"PLAYER PREVIEW"}</Text><TouchableOpacity onPress={()=>setShowQueue(!showQueue)}><MaterialCommunityIcons name="playlist-music" size={24} color="#FFF"/></TouchableOpacity></View>
   <View style={s.art}><View style={s.sun}/><View style={s.orbit}/><View style={s.disc}><MaterialCommunityIcons name="music-note-eighth" size={72} color="#FFF"/></View><Text style={s.artLabel}>RHYTHM E</Text></View>
-  <View style={s.song}><View style={{flex:1}}><Text style={s.title} numberOfLines={1}>{title}</Text><Text style={s.artist}>{activeTrack?.artist||"RHYTHM E • DEMO"}</Text></View><MaterialCommunityIcons name="heart-outline" size={25} color="#FF8DBB"/></View>
+  <View style={s.song}><View style={{flex:1}}><Text style={s.title} numberOfLines={1}>{title}</Text><Text style={s.artist}>{activeTrack?.artist||"RHYTHM E • DEMO"}</Text></View><TouchableOpacity onPress={()=>activeTrack&&toggleFavorite(activeTrack.id)}><MaterialCommunityIcons name={liked?"heart":"heart-outline"} size={25} color="#FF8DBB"/></TouchableOpacity></View>
   <View style={s.wave}>{Array.from({length:39},(_,i)=><View key={i} style={[s.bar,{height:7+(i*17%25),opacity:i<Math.round(progress/100*39)?1:.35}]}/>)}</View>
   <View style={s.progressTrack}><View style={[s.progressFill,{width:progress+"%"}]}/></View>
   <View style={s.times}><Text style={s.muted}>{clock(status.currentTime||0)}</Text><Text style={s.muted}>{duration?clock(duration):"--:--"}</Text></View>
   {hasTrack?<View style={s.controls}><TouchableOpacity onPress={skipPrevious}><MaterialCommunityIcons name="skip-previous" size={34} color="#FFF"/></TouchableOpacity><TouchableOpacity onPress={()=>seekTo((status.currentTime||0)-15)}><MaterialCommunityIcons name="rewind-15" size={26} color="#D8C2DB"/></TouchableOpacity><TouchableOpacity style={s.play} onPress={togglePlayback}><MaterialCommunityIcons name={status.playing?"pause":"play"} size={34} color="#26111D"/></TouchableOpacity><TouchableOpacity onPress={()=>seekTo((status.currentTime||0)+15)}><MaterialCommunityIcons name="fast-forward-15" size={26} color="#D8C2DB"/></TouchableOpacity><TouchableOpacity onPress={skipNext}><MaterialCommunityIcons name="skip-next" size={34} color="#FFF"/></TouchableOpacity></View>:<TouchableOpacity style={s.importButton} onPress={()=>router.push("/(tabs)/library")}><MaterialCommunityIcons name="folder-music" size={19} color="#26111D"/><Text style={s.importText}>IMPORT MUSIC TO PLAY</Text></TouchableOpacity>}
+  {showQueue&&<View style={s.queue}><Text style={s.queueTitle}>UP NEXT · {tracks.length} TRACKS</Text><ScrollView style={{maxHeight:130}}>{tracks.map((track,index)=><TouchableOpacity key={track.id} style={s.queueItem} onPress={()=>playTrack(index)}><Text numberOfLines={1} style={[s.queueName,{color:index===activeIndex?"#FF9CC4":"#FFF"}]}>{index+1}. {track.name}</Text><Text style={s.queueArtist}>{track.artist}</Text></TouchableOpacity>)}</ScrollView></View>}
   <TouchableOpacity style={s.lyricsButton} onPress={()=>router.push({pathname:"/lyrics/[id]",params:{id:String(id||"midnight-drive")}})}><MaterialCommunityIcons name="text" size={17} color="#FFF"/><Text style={s.lyricsText}>OPEN LYRICS</Text><MaterialCommunityIcons name="chevron-right" size={18} color="#FFF"/></TouchableOpacity>
   <Text style={s.info}>{hasTrack?"Playing a file selected from your device.":"Choose a local audio file from your Library to start playback."}</Text>
  </View>
@@ -32,6 +35,7 @@ const s=StyleSheet.create({
  times:{width:"100%",flexDirection:"row",justifyContent:"space-between",marginTop:7},muted:{color:"#907D96",fontSize:10},
  controls:{width:"100%",flexDirection:"row",alignItems:"center",justifyContent:"space-between",marginTop:23},play:{width:62,height:62,borderRadius:31,backgroundColor:"#FF9CC4",alignItems:"center",justifyContent:"center"},
  importButton:{marginTop:22,flexDirection:"row",alignItems:"center",gap:9,backgroundColor:"#FF9CC4",paddingHorizontal:18,paddingVertical:15,borderRadius:24},importText:{color:"#26111D",fontSize:10,fontWeight:"900",letterSpacing:1},
+ queue:{width:"100%",backgroundColor:"#25192B",borderRadius:15,padding:12,marginTop:13,borderWidth:1,borderColor:"#49364D"},queueTitle:{color:"#FF9CC4",fontSize:9,fontWeight:"900",letterSpacing:1.2,marginBottom:8},queueItem:{paddingVertical:7,borderBottomWidth:1,borderBottomColor:"#49364D"},queueName:{fontSize:10,fontWeight:"800"},queueArtist:{color:"#A98EAA",fontSize:8,marginTop:3},
  lyricsButton:{marginTop:20,flexDirection:"row",alignItems:"center",gap:10,backgroundColor:"#FFFFFF18",paddingHorizontal:17,paddingVertical:12,borderRadius:22},lyricsText:{color:"#FFF",fontSize:10,fontWeight:"900",letterSpacing:1.5},
  info:{color:"#907D96",fontSize:9,textAlign:"center",marginTop:15}
 });
