@@ -39,7 +39,7 @@ async function requestJson<T>(url: string): Promise<T> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   try {
-    const response = await fetch(url, { signal: controller.signal });
+    const response = await fetch(url, { signal: controller.signal, headers: { "Api-User-Agent": "RHYTHM-E/1.0 (open music discovery)" } });
     if (!response.ok) throw new Error(`Catalogue request failed (${response.status}).`);
     return await response.json() as T;
   } finally {
@@ -134,7 +134,7 @@ export async function searchArchiveMusic(query: string): Promise<FreeMusicTrack[
  * search unusable: tracks from the surviving source are still playable.
  */
 export async function searchFreeMusic(query: string): Promise<FreeMusicTrack[]> {
-  const [audius, archive] = await Promise.allSettled([
+  const [audius, archive, commons] = await Promise.allSettled([
     searchAudiusMusic(query),
     searchArchiveMusic(query)
   ]);
