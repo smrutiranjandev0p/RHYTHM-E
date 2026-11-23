@@ -5,12 +5,16 @@ import {isManagedAudio,migrateImportedAudio} from "./libraryStorage";
 
 export type LocalTrack={id:string;name:string;uri:string;artist:string;album?:string;source?:"Internet Archive"|"Local";license?:string;itemUrl?:string};
 type PersistedMusic={tracks:LocalTrack[];favorites:string[];recentTracks:LocalTrack[];activeTrackId:string|null};
+export type ListeningStats={totalSeconds:number;dailySeconds:Record<string,number>;lastPlayedDay:string|null;};
+const STATS_KEY="rhythm-e.listening-stats.v1";
+const localDay=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const emptyStats:ListeningStats={totalSeconds:0,dailySeconds:{},lastPlayedDay:null};
 type AudioContextValue={
  tracks:LocalTrack[];activeIndex:number;activeTrack:LocalTrack|null;status:any;
  addTracks:(tracks:LocalTrack[])=>void;updateTrack:(id:string,changes:Partial<Pick<LocalTrack,"name"|"artist"|"album">>)=>void;addAndPlayTrack:(track:LocalTrack)=>void;playTrack:(index:number)=>void;
  toggleFavorite:(id:string)=>void;isFavorite:(id:string)=>boolean;favorites:string[];
  togglePlayback:()=>void;skipNext:()=>void;skipPrevious:()=>void;seekTo:(seconds:number)=>void;
- recentTracks:LocalTrack[];setSleepTimer:(minutes:number)=>void;cancelSleepTimer:()=>void;sleepTimerEndsAt:number|null;
+ recentTracks:LocalTrack[];listeningStats:ListeningStats;setSleepTimer:(minutes:number)=>void;cancelSleepTimer:()=>void;sleepTimerEndsAt:number|null;
 };
 const AudioContext=createContext<AudioContextValue|null>(null);
 const STORAGE_KEY="rhythm-e.music-library.v1";
@@ -22,6 +26,8 @@ export function AudioProvider({children}:{children:React.ReactNode}){
  const [activeIndex,setActiveIndex]=useState(-1);
  const [favorites,setFavorites]=useState<string[]>([]);
  const [recentTracks,setRecentTracks]=useState<LocalTrack[]>([]);
+ const [listeningStats,setListeningStats]=useState<ListeningStats>(emptyStats);
+ const lastSample=useRef<{time:number;trackId:string|null;playing:boolean}>({time:0,trackId:null,playing:false});
  const [storageReady,setStorageReady]=useState(false);
  const [sleepTimerEndsAt,setSleepTimerEndsAt]=useState<number|null>(null);
  const sleepTimeout=useRef<ReturnType<typeof setTimeout>|null>(null);
@@ -99,7 +105,7 @@ export function AudioProvider({children}:{children:React.ReactNode}){
   sleepTimeout.current=setTimeout(()=>{player.pause();sleepTimeout.current=null;setSleepTimerEndsAt(null);},minutes*60*1000);
  };
  useEffect(()=>{if(status.didJustFinish&&activeIndex>=0&&tracks.length>0)playTrack((activeIndex+1)%tracks.length);},[status.didJustFinish]);
- const value=useMemo(()=>({tracks,activeIndex,activeTrack,status,addTracks,updateTrack,addAndPlayTrack,playTrack,toggleFavorite,isFavorite,favorites,togglePlayback,skipNext,skipPrevious,seekTo,recentTracks,setSleepTimer,cancelSleepTimer,sleepTimerEndsAt}),[tracks,activeIndex,activeTrack,status,favorites,recentTracks,sleepTimerEndsAt]);
+ const value=useMemo(()=>({tracks,activeIndex,activeTrack,status,addTracks,updateTrack,addAndPlayTrack,playTrack,toggleFavorite,isFavorite,favorites,togglePlayback,skipNext,skipPrevious,seekTo,recentTracks,listeningStats,setSleepTimer,cancelSleepTimer,sleepTimerEndsAt}),[tracks,activeIndex,activeTrack,status,favorites,recentTracks,listeningStats,sleepTimerEndsAt]);
  return <AudioContext.Provider value={value}>{children}</AudioContext.Provider>;
 }
 export function useAudio(){const value=useContext(AudioContext);if(!value)throw new Error("useAudio must be used inside AudioProvider");return value;}
