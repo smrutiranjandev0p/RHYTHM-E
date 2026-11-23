@@ -6,6 +6,7 @@ import {ActivityIndicator,Alert,Modal,ScrollView,StyleSheet,Text,TextInput,Touch
 import {useAudio} from "../../src/audio/AudioProvider";
 import type {LocalTrack} from "../../src/audio/AudioProvider";
 import {copyImportedAudioToLibrary} from "../../src/audio/libraryStorage";
+import ProfileButton from "../../src/components/ProfileButton";
 
 export default function LibraryScreen(){
  const router=useRouter();
@@ -56,7 +57,7 @@ export default function LibraryScreen(){
 
  return <>
  <ScrollView style={s.screen} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
-  <Text style={s.kicker}>YOUR COLLECTION</Text><Text style={s.title}>Library</Text><Text style={s.sub}>Your music, saved on this device.</Text>
+  <View style={{flexDirection:"row",alignItems:"center",justifyContent:"space-between"}}><Text style={s.kicker}>YOUR COLLECTION</Text><ProfileButton/></View><Text style={s.title}>Library</Text><Text style={s.sub}>Your music, saved on this device.</Text>
   <TouchableOpacity style={s.importCard} onPress={importAudio} disabled={loading}><View style={s.importIcon}><MaterialCommunityIcons name="folder-music" size={28} color="#FFF"/></View><View style={{flex:1}}><Text style={s.importTitle}>{loading?"Copying music into your library…":"Import music from your phone"}</Text><Text style={s.importSub}>Imported audio is copied to RHYTHM E's private app storage</Text></View>{loading?<ActivityIndicator color="#FFF"/>:<MaterialCommunityIcons name="plus-circle" size={25} color="#FFF"/>}</TouchableOpacity>
   <View style={s.section}><Text style={s.sectionTitle}>Your tracks</Text><Text style={s.count}>{tracks.length} TRACKS</Text></View>
   {tracks.length===0?<View style={s.empty}><MaterialCommunityIcons name="music-box-multiple-outline" size={43} color="#FF9CC4"/><Text style={s.emptyTitle}>Your music lives here.</Text><Text style={s.emptyBody}>Import audio files to keep a private copy inside RHYTHM E.</Text></View>:tracks.map((track,index)=>renderTrack(track,index))}
