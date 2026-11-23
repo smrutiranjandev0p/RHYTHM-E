@@ -1,9 +1,11 @@
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { AudioProvider } from "../src/audio/AudioProvider";
+import { SettingsProvider } from "../src/settings/SettingsProvider";
 
 export default function RootLayout() {
   return (
+    <SettingsProvider>
     <AudioProvider>
       <StatusBar style="light" />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "#160D1C" } }}>
@@ -16,5 +18,6 @@ export default function RootLayout() {
         <Stack.Screen name="insights" options={{ presentation: "card", animation: "slide_from_right" }} />
       </Stack>
     </AudioProvider>
+    </SettingsProvider>
   );
 }
