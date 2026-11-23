@@ -129,6 +129,72 @@ export async function searchArchiveMusic(query: string): Promise<FreeMusicTrack[
   return candidates.filter((track): track is FreeMusicTrack => track !== null);
 }
 
+
+type CommonsPage = {
+  pageid?: number;
+  title?: string;
+  imageinfo?: Array<{
+    url?: string;
+    descriptionurl?: string;
+    extmetadata?: {
+      LicenseShortName?: { value?: string };
+      LicenseUrl?: { value?: string };
+      Artist?: { value?: string };
+    };
+  }>;
+};
+
+/** Search Wikimedia Commons for audio with a reusable public licence. */
+export async function searchCommonsMusic(query: string): Promise<FreeMusicTrack[]> {
+  const term = query.trim();
+  if (!term) return [];
+  const searchParams = new URLSearchParams({
+    action: "query",
+    list: "search",
+    srsearch: `filetype:audio ${term}`,
+    srnamespace: "6",
+    srlimit: "20",
+    format: "json",
+    origin: "*"
+  });
+  const search = await requestJson<{ query?: { search?: Array<{ pageid: number }> } }>(
+    `https://commons.wikimedia.org/w/api.php?${searchParams.toString()}`
+  );
+  const matches = search.query?.search || [];
+  if (!matches.length) return [];
+  const detailParams = new URLSearchParams({
+    action: "query",
+    prop: "imageinfo",
+    iiprop: "url|extmetadata",
+    pageids: matches.map(item => String(item.pageid)).join("|"),
+    format: "json",
+    origin: "*"
+  });
+  const details = await requestJson<{ query?: { pages?: Record<string, CommonsPage> } }>(
+    `https://commons.wikimedia.org/w/api.php?${detailParams.toString()}`
+  );
+  const clean = (value: string) => value.replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/\s+/g, " ").trim();
+  return Object.values(details.query?.pages || {}).flatMap((page): FreeMusicTrack[] => {
+    const info = page.imageinfo?.[0];
+    const url = info?.url || "";
+    const meta = info?.extmetadata || {};
+    const licenseName = meta.LicenseShortName?.value || "";
+    const licenseUrl = meta.LicenseUrl?.value || "";
+    const permitted = /\b(CC0|CC BY(?:-SA)?(?:\s|$)|Public domain)\b/i.test(licenseName);
+    if (!url || !/\.(mp3|ogg|oga|flac|wav)$/i.test(url.split("?")[0]) || !permitted) return [];
+    return [{
+      id: `commons:${page.pageid}`,
+      name: clean((page.title || "Open audio").replace(/^File:/, "").replace(/\.[^.]+$/, "")),
+      artist: clean(meta.Artist?.value || "") || "Wikimedia Commons contributor",
+      uri: url,
+      source: "Wikimedia Commons",
+      license: licenseUrl || licenseName,
+      rightsLabel: `Wikimedia Commons · ${licenseName}`,
+      itemUrl: info?.descriptionurl || `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(page.title || "")}`
+    }];
+  });
+}
+
 /**
  * A best-effort online catalogue. A single upstream outage no longer makes
  * search unusable: tracks from the surviving source are still playable.
@@ -136,11 +202,13 @@ export async function searchArchiveMusic(query: string): Promise<FreeMusicTrack[
 export async function searchFreeMusic(query: string): Promise<FreeMusicTrack[]> {
   const [audius, archive, commons] = await Promise.allSettled([
     searchAudiusMusic(query),
-    searchArchiveMusic(query)
+    searchArchiveMusic(query),
+    searchCommonsMusic(query)
   ]);
   const results = [
     ...(audius.status === "fulfilled" ? audius.value : []),
-    ...(archive.status === "fulfilled" ? archive.value : [])
+    ...(archive.status === "fulfilled" ? archive.value : []),
+    ...(commons.status === "fulfilled" ? commons.value : [])
   ];
   if (!results.length) {
     throw new Error("Online music search is temporarily unavailable. Check your connection and try again.");
