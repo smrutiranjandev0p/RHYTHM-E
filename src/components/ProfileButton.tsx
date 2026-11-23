@@ -9,7 +9,7 @@ export default function ProfileButton(){
   accessibilityLabel="Open your profile"
   activeOpacity={0.7}
   style={s.button}
-  onPress={()=>router.push("/(tabs)/profile" as any)}
+  onPress={()=>router.push("/profile" as any)}
  >
   <MaterialCommunityIcons name="account-circle" size={23} color="#FFF"/>
  </TouchableOpacity>;
