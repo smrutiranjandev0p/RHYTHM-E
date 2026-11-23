@@ -3,7 +3,7 @@ export type FreeMusicTrack = {
   name: string;
   uri: string;
   artist: string;
-  source: "Audius" | "Internet Archive";
+  source: "Audius" | "Internet Archive" | "Wikimedia Commons";
   license: string;
   rightsLabel: string;
   itemUrl: string;
