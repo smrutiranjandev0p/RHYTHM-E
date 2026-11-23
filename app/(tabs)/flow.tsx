@@ -10,7 +10,7 @@ export default function FlowScreen(){
  const router=useRouter();const {height}=useWindowDimensions();
  const {tracks,activeIndex,status,playTrack,togglePlayback,favorites,toggleFavorite}=useAudio();
  const [page,setPage]=useState(Math.max(0,activeIndex));
- const scroll=useRef<ScrollView>(null);const pulse=useRef(new Animated.Value(0)).current;const rotation=useRef(new Animated.Value(0)).current;
+ const scroll=useRef<ScrollView | null>(null);const pulse=useRef(new Animated.Value(0)).current;const rotation=useRef(new Animated.Value(0)).current;
  const pageHeight=Math.max(480,height-65);
  useEffect(()=>{const animation=Animated.loop(Animated.sequence([Animated.timing(pulse,{toValue:1,duration:1900,useNativeDriver:true}),Animated.timing(pulse,{toValue:0,duration:1900,useNativeDriver:true})]));animation.start();return()=>animation.stop();},[pulse]);
  useEffect(()=>{const animation=Animated.loop(Animated.timing(rotation,{toValue:1,duration:18000,useNativeDriver:true}));animation.start();return()=>animation.stop();},[rotation]);
