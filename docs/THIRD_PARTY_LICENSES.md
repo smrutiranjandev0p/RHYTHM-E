@@ -20,4 +20,4 @@ Before distributing an Android build containing NewPipeExtractor:
 4. Include notices for all transitive dependencies and comply with their separate licences.
 5. Do not imply that GPL grants permission to access, reproduce, stream, download, or redistribute third-party music.
 
-The repository currently configures the Android dependency only. No NewPipeExtractor service extraction, stream resolution, or React Native playback bridge is enabled by this change. Existing authorised catalogue adapters and the existing audio player remain the playback path.
+The Android Expo module now exposes a read-only React Native bridge for the library version and built-in service capability metadata. It performs no network requests, service searches, stream resolution, media playback, downloading, or sharing. Existing authorised catalogue adapters (Audius, Internet Archive and Wikimedia Commons) continue to supply their own metadata and permitted audio URLs to the existing Expo Audio player. The NewPipe service list is descriptive library metadata, not a declaration that those providers authorize RHYTHM E playback.
