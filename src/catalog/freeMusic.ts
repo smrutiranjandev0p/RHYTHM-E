@@ -21,13 +21,14 @@ export async function searchFreeMusic(query: string): Promise<FreeMusicTrack[]> 
   const term = query.trim();
   if (!term) return [];
   const params = new URLSearchParams({
-    q: `mediatype:audio AND (${term.replace(/[():"]/g, " " )}) AND (licenseurl:http*creativecommons.org/licenses/by/* OR licenseurl:http*creativecommons.org/licenses/by-sa/* OR licenseurl:http*creativecommons.org/licenses/by-nc/* OR licenseurl:http*creativecommons.org/licenses/by-nc-sa/* OR licenseurl:http*creativecommons.org/publicdomain/*)`,
+    q: `mediatype:audio AND (${term.replace(/[():"]/g, " ")}) AND (licenseurl:http*creativecommons.org/licenses/by/* OR licenseurl:http*creativecommons.org/licenses/by-sa/* OR licenseurl:http*creativecommons.org/licenses/by-nc/* OR licenseurl:http*creativecommons.org/licenses/by-nc-sa/* OR licenseurl:http*creativecommons.org/publicdomain/*)`,
     fl: "identifier,title,creator,licenseurl",
     rows: "18",
     page: "1",
     output: "json"
   });
-  ["identifier", "title", "creator", "licenseurl"].forEach(field => params.append("fl[]", field));\n  const response = await fetch(`${ARCHIVE}/advancedsearch.php?${params.toString()}`);
+  ["identifier", "title", "creator", "licenseurl"].forEach(field => params.append("fl[]", field));
+  const response = await fetch(`${ARCHIVE}/advancedsearch.php?${params.toString()}`);
   if (!response.ok) throw new Error("Free music search is temporarily unavailable.");
   const payload = await response.json();
   const docs: ArchiveDoc[] = payload?.response?.docs || [];
