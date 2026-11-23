@@ -8,6 +8,7 @@ export default function RootLayout() {
       <StatusBar style="light" />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "#160D1C" } }}>
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="profile" options={{ presentation: "card", animation: "slide_from_right" }} />
         <Stack.Screen name="player/[id]" options={{ presentation: "card", animation: "slide_from_bottom" }} />
         <Stack.Screen name="lyrics/[id]" options={{ presentation: "card", animation: "slide_from_bottom" }} />
         <Stack.Screen name="sound-lab" options={{ presentation: "card", animation: "slide_from_right" }} />
