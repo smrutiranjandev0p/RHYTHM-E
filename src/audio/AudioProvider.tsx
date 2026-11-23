@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {createAudioPlayer,setAudioModeAsync,useAudioPlayerStatus} from "expo-audio";
 import {isManagedAudio,migrateImportedAudio} from "./libraryStorage";
 
-export type LocalTrack={id:string;name:string;uri:string;artist:string;album?:string;source?:"Internet Archive"|"Local";license?:string;itemUrl?:string};
+export type LocalTrack={id:string;name:string;uri:string;artist:string;album?:string;source?:"Audius"|"Internet Archive"|"Local";license?:string;itemUrl?:string;artworkUrl?:string;duration?:number};
 type PersistedMusic={tracks:LocalTrack[];favorites:string[];recentTracks:LocalTrack[];activeTrackId:string|null};
 export type ListeningStats={totalSeconds:number;dailySeconds:Record<string,number>;lastPlayedDay:string|null;};
 const STATS_KEY="rhythm-e.listening-stats.v1";
@@ -80,7 +80,7 @@ export function AudioProvider({children}:{children:React.ReactNode}){
   const track=tracks[index];if(!track)return;
   setActiveIndex(index);remember(track);
   player.replace({uri:track.uri,name:track.name});
-  player.setActiveForLockScreen(true,{title:track.name,artist:track.artist,albumTitle:track.album||(track.source==="Internet Archive"?"RHYTHM E • Free Music":"RHYTHM E • Local Library")});
+  player.setActiveForLockScreen(true,{title:track.name,artist:track.artist,albumTitle:track.album||(track.source?`RHYTHM E • ${track.source}`:"RHYTHM E • Local Library")});
   player.play();
  };
  const addAndPlayTrack=(track:LocalTrack)=>{
