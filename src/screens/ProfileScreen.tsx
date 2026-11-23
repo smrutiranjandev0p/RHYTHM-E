@@ -1,0 +1,18 @@
+import {useRouter} from "expo-router";
+import {MaterialCommunityIcons} from "@expo/vector-icons";
+import {ScrollView,StyleSheet,Text,TouchableOpacity,View} from "react-native";
+
+const actions=[
+ {title:"Sound Lab",detail:"Equalizer, audio preferences and enhancements",icon:"tune-variant",route:"/sound-lab",color:"#D95791"},
+ {title:"Listening insights",detail:"Your listening story and music personality",icon:"chart-timeline-variant",route:"/insights",color:"#8D67C4"},
+ {title:"Lyrics & language",detail:"Lyrics display and translation preferences",icon:"text-box-multiple-outline",route:"/lyrics/midnight-drive",color:"#398B8B"},
+ {title:"App experience",detail:"Appearance, notifications and privacy",icon:"palette-outline",route:"/settings",color:"#C47C3B"}
+];
+export default function ProfileScreen(){const router=useRouter();return <ScrollView style={s.screen} contentContainerStyle={s.content}>
+ <View style={s.top}><Text style={s.kicker}>YOUR MUSIC UNIVERSE</Text><MaterialCommunityIcons name="cog-outline" size={23} color="#FFF"/></View>
+ <View style={s.profile}><View style={s.avatar}><Text style={s.initial}>E</Text></View><Text style={s.title}>Your space.</Text><Text style={s.sub}>Make RHYTHM E sound and feel like you.</Text><View style={s.tag}><MaterialCommunityIcons name="creation" size={13} color="#FF9CC4"/><Text style={s.tagText}>EARLY ACCESS MEMBER</Text></View></View>
+ <Text style={s.section}>Personalise your experience</Text>
+ {actions.map(a=><TouchableOpacity key={a.title} style={s.action} onPress={()=>router.push(a.route as any)}><View style={[s.actionIcon,{backgroundColor:a.color}]}><MaterialCommunityIcons name={a.icon as any} size={21} color="#FFF"/></View><View style={{flex:1}}><Text style={s.actionTitle}>{a.title}</Text><Text style={s.actionDetail}>{a.detail}</Text></View><MaterialCommunityIcons name="chevron-right" size={22} color="#A98EAA"/></TouchableOpacity>)}
+ <View style={s.footer}><Text style={s.footerBrand}>RHYTHM E</Text><Text style={s.footerText}>Beyond listening. Built around you.</Text><Text style={s.version}>VERSION 1.0 • DEVELOPMENT BUILD</Text></View>
+ </ScrollView>}
+const s=StyleSheet.create({screen:{flex:1,backgroundColor:"#160D1C"},content:{padding:22,paddingTop:61,paddingBottom:170},top:{flexDirection:"row",justifyContent:"space-between",alignItems:"center"},kicker:{color:"#FF9CC4",fontSize:9,letterSpacing:2,fontWeight:"900"},profile:{alignItems:"center",paddingVertical:31},avatar:{width:86,height:86,borderRadius:30,backgroundColor:"#C34E7D",alignItems:"center",justifyContent:"center",borderWidth:4,borderColor:"#FFFFFF25"},initial:{color:"#FFF",fontSize:39,fontWeight:"900"},title:{color:"#FFF",fontSize:28,fontWeight:"900",marginTop:18},sub:{color:"#B9A6BD",fontSize:12,marginTop:7},tag:{flexDirection:"row",alignItems:"center",gap:7,backgroundColor:"#352238",paddingHorizontal:12,paddingVertical:8,borderRadius:18,marginTop:15},tagText:{color:"#FFD7E8",fontSize:8,fontWeight:"900",letterSpacing:1.2},section:{color:"#FFF",fontSize:16,fontWeight:"900",marginBottom:12},action:{flexDirection:"row",alignItems:"center",gap:13,backgroundColor:"#25192B",padding:13,borderRadius:17,marginBottom:10,borderWidth:1,borderColor:"#3B293F"},actionIcon:{width:43,height:43,borderRadius:14,alignItems:"center",justifyContent:"center"},actionTitle:{color:"#FFF",fontSize:12,fontWeight:"900"},actionDetail:{color:"#A98EAA",fontSize:9,marginTop:4},footer:{alignItems:"center",marginTop:25},footerBrand:{color:"#FF9CC4",fontSize:13,letterSpacing:3,fontWeight:"900"},footerText:{color:"#B9A6BD",fontSize:10,marginTop:7},version:{color:"#78677D",fontSize:8,letterSpacing:1.3,marginTop:13}});
