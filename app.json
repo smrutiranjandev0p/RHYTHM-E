@@ -25,7 +25,8 @@
         }
       ],
       "expo-notifications",
-      "react-native-audio-api"
+      "react-native-audio-api",
+      "./plugins/withNewPipeExtractor"
     ],
     "experiments": {
       "typedRoutes": true
