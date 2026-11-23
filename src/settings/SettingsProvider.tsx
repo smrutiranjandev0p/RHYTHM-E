@@ -11,7 +11,7 @@ const KEY="rhythm-e.preferences.v1";
 const defaults:Preferences={theme:"Dark",haptics:true,notifications:false};
 const Context=createContext<SettingsContextValue|null>(null);
 
-Notifications.setNotificationHandler({handleNotification:async()=>({shouldShowAlert:true,shouldPlaySound:false,shouldSetBadge:false})});
+Notifications.setNotificationHandler({handleNotification:async()=>({shouldShowBanner:true,shouldShowList:true,shouldPlaySound:false,shouldSetBadge:false})});
 
 async function scheduleReminder(){
  if(Platform.OS==="android") await Notifications.setNotificationChannelAsync("listening-reminders",{name:"Listening reminders",importance:Notifications.AndroidImportance.DEFAULT,sound:null});
@@ -19,7 +19,7 @@ async function scheduleReminder(){
  if(!permission.granted) permission=await Notifications.requestPermissionsAsync();
  if(!permission.granted) throw new Error("Notification permission was not granted.");
  await Notifications.cancelAllScheduledNotificationsAsync();
- await Notifications.scheduleNotificationAsync({content:{title:"Your RHYTHM E moment",body:"Take a moment for the music you love.",sound:false},trigger:{type:Notifications.SchedulableTriggerInputTypes.DAILY,hour:20,minute:0,channelId:Platform.OS==="android"?"listening-reminders":undefined}});
+ await Notifications.scheduleNotificationAsync({content:{title:"Your RHYTHM E moment",body:"Take a moment for the music you love.",sound:false},trigger:{type:Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,seconds:86400,repeats:true,channelId:Platform.OS==="android"?"listening-reminders":undefined}});
 }
 export function SettingsProvider({children}:{children:React.ReactNode}){
  const [prefs,setPrefs]=useState<Preferences>(defaults);const [ready,setReady]=useState(false);
