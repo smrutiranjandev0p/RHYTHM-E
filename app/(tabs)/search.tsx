@@ -5,6 +5,7 @@ import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {ActivityIndicator,ScrollView,StyleSheet,Text,TextInput,TouchableOpacity,View,Alert} from "react-native";
 import {searchFreeMusic,FreeMusicTrack} from "../../src/catalog/freeMusic";
 import {useAudio} from "../../src/audio/AudioProvider";
+import ProfileButton from "../../src/components/ProfileButton";
 
 const suggestions=["Chill","Love","Energy","Focus","Indie","Electronic","Hip-hop","Acoustic","Lo-fi","Devotional"];
 export default function SearchScreen(){
@@ -14,7 +15,7 @@ export default function SearchScreen(){
  useEffect(()=>{if(params.q)setQuery(String(params.q));},[params.q]);
  const search=async(value=query)=>{setQuery(value);if(!value.trim()){setResults([]);setError("");return;}setLoading(true);setError("");try{setResults(await searchFreeMusic(value));}catch(e){setError(e instanceof Error?e.message:"Search failed. Please try again.");}finally{setLoading(false);}};
  return <ScrollView style={s.screen} contentContainerStyle={s.content} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-  <Text style={s.kicker}>YOUR NEXT OBSESSION</Text><Text style={s.title}>Search</Text><Text style={s.sub}>Discover free-to-use music and your own collection.</Text>
+  <View style={{flexDirection:"row",alignItems:"center",justifyContent:"space-between"}}><Text style={s.kicker}>YOUR NEXT OBSESSION</Text><ProfileButton/></View><Text style={s.title}>Search</Text><Text style={s.sub}>Discover free-to-use music and your own collection.</Text>
   <View style={s.search}><MaterialCommunityIcons name="magnify" size={22} color="#FF9CC4"/><TextInput value={query} onChangeText={setQuery} onSubmitEditing={()=>search()} placeholder="Songs, artists, moods…" placeholderTextColor="#8F7D95" style={s.input} returnKeyType="search"/><TouchableOpacity onPress={()=>search()}><MaterialCommunityIcons name="arrow-right-circle" size={24} color="#FF9CC4"/></TouchableOpacity></View>
   {!query.trim()?<><Text style={s.heading}>Browse by mood</Text><View style={s.chips}>{suggestions.map((item,index)=><TouchableOpacity key={item} style={[s.chip,{backgroundColor:["#352238","#273A4B","#493044","#302A50"][index%4]}]} onPress={()=>search(item)}><Text style={s.chipText}>{item}</Text></TouchableOpacity>)}</View></>:null}
   <View style={s.sectionHead}><Text style={s.heading}>Free music results</Text>{loading?<ActivityIndicator color="#FF9CC4"/>:null}</View>
