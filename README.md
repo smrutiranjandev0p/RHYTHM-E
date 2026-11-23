@@ -174,6 +174,7 @@ The project currently uses:
 No unauthorised stream extraction, DRM circumvention, private API scraping or unauthorised downloading/caching is part of this project.
 
 See:
+- [Open music catalogue sources and validation checklist](docs/OPEN_MUSIC_CATALOGUE.md)
 - [Free / non-commercial product direction](docs/LASTWAVE_INSPIRED_NONCOMMERCIAL_PLAN.md)
 - [Licensed catalogue implementation notes](docs/LICENSED_CATALOGUE_IMPLEMENTATION.md)
 - [REELSONIC DSP engineering plan](docs/REELSONIC_DSP.md)
