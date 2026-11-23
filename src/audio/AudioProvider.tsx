@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {createAudioPlayer,setAudioModeAsync,useAudioPlayerStatus} from "expo-audio";
 import {isManagedAudio,migrateImportedAudio} from "./libraryStorage";
 
-export type LocalTrack={id:string;name:string;uri:string;artist:string;album?:string;source?:"Audius"|"Internet Archive"|"Local";license?:string;itemUrl?:string;artworkUrl?:string;duration?:number};
+export type LocalTrack={id:string;name:string;uri:string;artist:string;album?:string;source?:"Audius"|"Internet Archive"|"Wikimedia Commons"|"Local";license?:string;rightsLabel?:string;itemUrl?:string;artworkUrl?:string;duration?:number};
 type PersistedMusic={tracks:LocalTrack[];favorites:string[];recentTracks:LocalTrack[];activeTrackId:string|null};
 export type ListeningStats={totalSeconds:number;dailySeconds:Record<string,number>;lastPlayedDay:string|null;};
 const STATS_KEY="rhythm-e.listening-stats.v1";
