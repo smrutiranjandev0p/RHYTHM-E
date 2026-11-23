@@ -157,7 +157,7 @@ The detailed plan and validation gates live in [FEATURE_ROADMAP.md](docs/FEATURE
 - **Persistence:** Track metadata, favourites and recent listening history are stored on-device. Restoring a selected track does not automatically start playback.
 - **REELSONIC:** The equalizer controls and preset curves are currently design previews. No EQ, compressor, limiter or loudness processing is active in playback.
 - **Online music:** RHYTHM E searches creator-published Audius streams, then licence-filtered Creative Commons/Public Domain audio from Internet Archive and Wikimedia Commons. The sources operate independently, so a failure in one does not empty a search. Audius availability is creator-controlled; archive and Commons licence metadata must be checked on the source page. These sources do not promise every commercial release.
-- **YouTube:** RHYTHM E opens official YouTube search. It does not extract, relay, download or cache YouTube audio.
+- **YouTube:** RHYTHM E opens official YouTube search. It does not extract, relay, download or cache YouTube audio. NewPipeExtractor v0.27.1 is configured as an Android dependency for future permitted integrations; it is not currently used to resolve or play third-party streams.
 - **Testing:** Dependency checks, typechecking, native builds and physical-device playback must be completed before calling this release-ready.
 
 ## ◉ 08 / MUSIC RIGHTS & RESPONSIBLE ACCESS
@@ -178,6 +178,7 @@ See:
 - [Free / non-commercial product direction](docs/LASTWAVE_INSPIRED_NONCOMMERCIAL_PLAN.md)
 - [Licensed catalogue implementation notes](docs/LICENSED_CATALOGUE_IMPLEMENTATION.md)
 - [REELSONIC DSP engineering plan](docs/REELSONIC_DSP.md)
+- [Third-party software licences](docs/THIRD_PARTY_LICENSES.md)
 
 ## ◉ 09 / CONTRIBUTION & DEVELOPMENT RULES
 
