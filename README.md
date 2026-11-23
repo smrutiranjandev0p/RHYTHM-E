@@ -46,7 +46,7 @@ A premium dark interface, a vertical music Flow, a personal library and a sound-
 | **PLAYER CORE** | Shared playback queue, play/pause, skip, seek, automatic next track and in-app online tracks | Implemented; device QA pending |
 | **MY LIBRARY** | Import audio into private app storage; keep favourites and recent plays | Implemented; device QA pending |
 | **ARTIST / ALBUM SPACE** | Browse tracks by artist and album; edit title, artist and album metadata | Implemented; device QA pending |
-| **DISCOVER** | Mood-led discovery with resilient multi-source online search | Audius + Internet Archive connected |
+| **DISCOVER** | Mood-led discovery with resilient multi-source online search | Audius + Internet Archive + Wikimedia Commons connected |
 | **LYRICS** | LRCLIB lookup and timestamp-based synced-line highlighting when available | Connected; QA pending |
 | **SOUND LAB** | REELSONIC preset and equalizer interface, plus sleep timer | UI preview; DSP not active |
 | **INSIGHTS** | Recent listening and basic library insights | Prototype |
@@ -156,7 +156,7 @@ The detailed plan and validation gates live in [FEATURE_ROADMAP.md](docs/FEATURE
 - **Older imports:** The app attempts to migrate older picker-cache tracks on startup when their original files are still accessible.
 - **Persistence:** Track metadata, favourites and recent listening history are stored on-device. Restoring a selected track does not automatically start playback.
 - **REELSONIC:** The equalizer controls and preset curves are currently design previews. No EQ, compressor, limiter or loudness processing is active in playback.
-- **Online music:** RHYTHM E searches public Audius streams first and then Creative Commons/Public Domain results from Internet Archive. The sources operate independently, so a failure in one does not empty a search. Audius availability is creator-controlled; Internet Archive licence metadata is uploader-provided and must be checked on the source page. Neither source is a promise of every commercial release.
+- **Online music:** RHYTHM E searches creator-published Audius streams, then licence-filtered Creative Commons/Public Domain audio from Internet Archive and Wikimedia Commons. The sources operate independently, so a failure in one does not empty a search. Audius availability is creator-controlled; archive and Commons licence metadata must be checked on the source page. These sources do not promise every commercial release.
 - **YouTube:** RHYTHM E opens official YouTube search. It does not extract, relay, download or cache YouTube audio.
 - **Testing:** Dependency checks, typechecking, native builds and physical-device playback must be completed before calling this release-ready.
 
