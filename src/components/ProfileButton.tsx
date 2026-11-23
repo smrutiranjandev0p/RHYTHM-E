@@ -4,7 +4,13 @@ import {StyleSheet,TouchableOpacity} from "react-native";
 
 export default function ProfileButton(){
  const router=useRouter();
- return <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open your profile" style={s.button} onPress={()=>router.push("/profile")}>
+ return <TouchableOpacity
+  accessibilityRole="button"
+  accessibilityLabel="Open your profile"
+  activeOpacity={0.7}
+  style={s.button}
+  onPress={()=>router.push("/(tabs)/profile" as any)}
+ >
   <MaterialCommunityIcons name="account-circle" size={23} color="#FFF"/>
  </TouchableOpacity>;
 }
