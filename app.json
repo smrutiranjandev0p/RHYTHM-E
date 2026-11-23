@@ -11,8 +11,7 @@
       "bundleIdentifier": "com.rhythme.musicapp"
     },
     "android": {
-      "package": "com.rhythme.musicapp",
-      "edgeToEdgeEnabled": true
+      "package": "com.rhythme.musicapp"
     },
     "plugins": [
       "expo-router",
