@@ -24,7 +24,8 @@
           "microphonePermission": false
         }
       ],
-      "expo-notifications"
+      "expo-notifications",
+      "react-native-audio-api"
     ],
     "experiments": {
       "typedRoutes": true
