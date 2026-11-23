@@ -4,6 +4,7 @@ import {useRouter} from "expo-router";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {Animated,NativeScrollEvent,NativeSyntheticEvent,ScrollView,StyleSheet,Text,TouchableOpacity,useWindowDimensions,View} from "react-native";
 import {useAudio} from "../../src/audio/AudioProvider";
+import ProfileButton from "../../src/components/ProfileButton";
 
 const palettes=["#8E3D68","#51417D","#276A68","#A85A36","#3E587E","#7255A5"];
 const symbols=["waveform","music-note","headphones","music-clef-treble","equalizer","audio-video"];
@@ -20,9 +21,9 @@ export default function FlowScreen(){
  const go=(index:number)=>{if(!tracks.length)return;const next=Math.max(0,Math.min(tracks.length-1,index));scroll.current?.scrollTo({y:next*pageHeight,animated:true});setPage(next);if(next!==activeIndex)playTrack(next);};
  const current=tracks[page];const isFavorite=!!current&&favorites.includes(current.id);
  const percent=activeIndex===page&&status.duration>0?Math.min(100,Math.max(0,status.currentTime/status.duration*100)):0;
- if(!tracks.length)return <View style={s.emptyScreen}><View style={s.top}><Text style={s.kicker}>RHYTHM E FLOW</Text><MaterialCommunityIcons name="gesture-swipe-vertical" size={24} color="#FF9CC4"/></View><View style={s.emptyArt}><MaterialCommunityIcons name="waveform" size={75} color="#FFE1ED"/></View><Text style={s.emptyTitle}>Swipe into your sound.</Text><Text style={s.emptyText}>Your vertical music feed is ready. Import songs from your phone and swipe up or down to move between tracks.</Text><TouchableOpacity style={s.import} onPress={()=>router.push("/library")}><MaterialCommunityIcons name="folder-music" size={20} color="#FFF"/><Text style={s.importText}>Open your Library</Text></TouchableOpacity><Text style={s.hint}>UP NEXT. DOWN PREVIOUS. YOUR MUSIC, YOUR FLOW.</Text></View>;
+ if(!tracks.length)return <View style={s.emptyScreen}><View style={s.top}><Text style={s.kicker}>RHYTHM E FLOW</Text><ProfileButton/></View><View style={s.emptyArt}><MaterialCommunityIcons name="waveform" size={75} color="#FFE1ED"/></View><Text style={s.emptyTitle}>Swipe into your sound.</Text><Text style={s.emptyText}>Your vertical music feed is ready. Import songs from your phone and swipe up or down to move between tracks.</Text><TouchableOpacity style={s.import} onPress={()=>router.push("/library")}><MaterialCommunityIcons name="folder-music" size={20} color="#FFF"/><Text style={s.importText}>Open your Library</Text></TouchableOpacity><Text style={s.hint}>UP NEXT. DOWN PREVIOUS. YOUR MUSIC, YOUR FLOW.</Text></View>;
  return <View style={s.screen}>
-  <View style={s.header}><View><Text style={s.kicker}>RHYTHM E</Text><Text style={s.headerTitle}>Flow</Text></View><TouchableOpacity style={s.headerButton} onPress={()=>router.push("/library")}><MaterialCommunityIcons name="playlist-music" size={22} color="#FFF"/></TouchableOpacity></View>
+  <View style={s.header}><View><Text style={s.kicker}>RHYTHM E</Text><Text style={s.headerTitle}>Flow</Text></View><View style={{flexDirection:"row",alignItems:"center",gap:9}}><TouchableOpacity style={s.headerButton} onPress={()=>router.push("/library")}><MaterialCommunityIcons name="playlist-music" size={22} color="#FFF"/></TouchableOpacity><ProfileButton/></View></View>
   <ScrollView ref={scroll} pagingEnabled snapToInterval={pageHeight} decelerationRate="fast" showsVerticalScrollIndicator={false} onMomentumScrollEnd={onEnd} contentOffset={{x:0,y:Math.max(0,activeIndex)*pageHeight}}>
    {tracks.map((track,index)=>{const selected=index===page;const liked=favorites.includes(track.id);return <View key={track.id} style={[s.page,{height:pageHeight}]}>
     <View style={[s.artwork,{backgroundColor:palettes[index%palettes.length]}]}>
