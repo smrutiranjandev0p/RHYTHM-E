@@ -5,7 +5,7 @@ import {useAudio} from "../../src/audio/AudioProvider";
 
 function MiniPlayer(){
  const router=useRouter();const segments=useSegments();const {activeTrack,status,togglePlayback}=useAudio();
- if(!activeTrack||segments.includes("flow"))return null;
+ if(!activeTrack||segments.includes("flow")||segments.includes("index"))return null;
  return <TouchableOpacity activeOpacity={0.92} style={s.mini} onPress={()=>router.push("/player/local")}>
   <View style={s.miniArt}><MaterialCommunityIcons name="music-note" size={19} color="#FFF"/></View>
   <View style={{flex:1}}><Text style={s.miniTitle} numberOfLines={1}>{activeTrack.name}</Text><Text style={s.miniArtist} numberOfLines={1}>{activeTrack.artist}</Text></View>
@@ -16,7 +16,6 @@ function MiniPlayer(){
 export default function TabLayout(){const segments=useSegments();const immersiveFlow=segments.includes("flow");return <View style={s.root}><Tabs screenOptions={{headerShown:false,tabBarStyle:immersiveFlow?{...s.tabBar,display:"none"}:s.tabBar,tabBarActiveTintColor:"#FF9CC4",tabBarInactiveTintColor:"#887B90",tabBarLabelStyle:s.label,tabBarItemStyle:{paddingTop:5},sceneStyle:{backgroundColor:"#160D1C"}}}>
  <Tabs.Screen name="index" options={{title:"Home",tabBarIcon:({color,size})=><MaterialCommunityIcons name="home-variant" color={typeof color === "string" ? color : "#887B90"} size={size}/>}}/>
  <Tabs.Screen name="discover" options={{title:"Discover",tabBarIcon:({color,size})=><MaterialCommunityIcons name="compass-outline" color={typeof color === "string" ? color : "#887B90"} size={size}/>}}/>
- <Tabs.Screen name="flow" options={{title:"Flow",tabBarIcon:({color,size})=><MaterialCommunityIcons name="waveform" color={typeof color === "string" ? color : "#887B90"} size={size+2}/>}}/>
  <Tabs.Screen name="search" options={{title:"Search",tabBarIcon:({color,size})=><MaterialCommunityIcons name="magnify" color={typeof color === "string" ? color : "#887B90"} size={size+3}/>}}/>
  <Tabs.Screen name="library" options={{title:"Library",tabBarIcon:({color,size})=><MaterialCommunityIcons name="music-box-multiple-outline" color={typeof color === "string" ? color : "#887B90"} size={size}/>}}/>
  <Tabs.Screen name="profile" options={{href:null}}/>
