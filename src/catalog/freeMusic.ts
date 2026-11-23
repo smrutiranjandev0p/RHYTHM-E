@@ -5,6 +5,7 @@ export type FreeMusicTrack = {
   artist: string;
   source: "Audius" | "Internet Archive";
   license: string;
+  rightsLabel: string;
   itemUrl: string;
   artworkUrl?: string;
   duration?: number;
@@ -76,7 +77,8 @@ export async function searchAudiusMusic(query: string): Promise<FreeMusicTrack[]
       artist: track.user?.name?.trim() || track.user?.handle?.trim() || "Audius creator",
       uri: `${AUDIUS}/tracks/${encodeURIComponent(track.id!)}/stream`,
       source: "Audius" as const,
-      license: "Available through Audius public streaming API",
+      license: "Creator-published Audius stream; check the source page for usage terms.",
+      rightsLabel: "Creator-published stream · usage terms vary",
       itemUrl: track.permalink ? `https://audius.co/${track.permalink}` : "https://audius.co",
       artworkUrl: track.artwork?.["480x480"] || track.artwork?.["150x150"] || track.artwork?.["1000x1000"],
       duration: typeof track.duration === "number" ? track.duration : undefined
@@ -117,6 +119,7 @@ export async function searchArchiveMusic(query: string): Promise<FreeMusicTrack[
         uri: `${ARCHIVE}/download/${encodeURIComponent(identifier)}/${audio.name.split("/").map(encodeURIComponent).join("/")}`,
         source: "Internet Archive",
         license,
+        rightsLabel: `Internet Archive · ${license.split("/").filter(Boolean).slice(-2).join(" ")}`,
         itemUrl: `${ARCHIVE}/details/${encodeURIComponent(identifier)}`
       };
     } catch {
