@@ -5,13 +5,13 @@ import {useAudio} from "../../src/audio/AudioProvider";
 import {useAppSettings,getThemePalette} from "../../src/settings/SettingsProvider";
 
 function MiniPlayer(){
- const router=useRouter();const segments=useSegments();const {activeTrack,status,togglePlayback}=useAudio();
+ const router=useRouter();const segments=useSegments();const {activeTrack,status,togglePlayback}=useAudio();const {theme}=useAppSettings();const p=getThemePalette(theme,useColorScheme());
  if(!activeTrack||segments.includes("flow")||segments.includes("index"))return null;
- return <TouchableOpacity activeOpacity={0.92} style={s.mini} onPress={()=>router.push("/player/local")}>
+ return <TouchableOpacity activeOpacity={0.92} style={[s.mini,{backgroundColor:p.surface,borderColor:p.border}]} onPress={()=>router.push("/player/local")}>
   <View style={s.miniArt}><MaterialCommunityIcons name="music-note" size={19} color="#FFF"/></View>
-  <View style={{flex:1}}><Text style={s.miniTitle} numberOfLines={1}>{activeTrack.name}</Text><Text style={s.miniArtist} numberOfLines={1}>{activeTrack.artist}</Text></View>
+  <View style={{flex:1}}><Text style={[s.miniTitle,{color:p.text}]} numberOfLines={1}>{activeTrack.name}</Text><Text style={[s.miniArtist,{color:p.muted}]} numberOfLines={1}>{activeTrack.artist}</Text></View>
   <TouchableOpacity onPress={togglePlayback} hitSlop={10} style={s.miniControl}><MaterialCommunityIcons name={status.playing?"pause":"play"} size={25} color="#FFF"/></TouchableOpacity>
-  <MaterialCommunityIcons name="playlist-music" size={21} color="#FFB5D1"/>
+  <MaterialCommunityIcons name="playlist-music" size={21} color={p.accent}/>
  </TouchableOpacity>
 }
 export default function TabLayout(){const segments=useSegments();const immersiveFlow=segments.includes("flow");const {theme}=useAppSettings();const palette=getThemePalette(theme,useColorScheme());return <View style={[s.root,{backgroundColor:palette.background}]}><Tabs screenOptions={{headerShown:false,tabBarStyle:immersiveFlow?{...s.tabBar,display:"none"}:{...s.tabBar,backgroundColor:palette.surface,borderTopColor:palette.border},tabBarActiveTintColor:palette.accent,tabBarInactiveTintColor:palette.muted,tabBarLabelStyle:s.label,tabBarItemStyle:{paddingTop:5},sceneStyle:{backgroundColor:palette.background}}}>
