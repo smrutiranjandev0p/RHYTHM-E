@@ -1,7 +1,8 @@
 import {Tabs,useRouter,useSegments} from "expo-router";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
-import {StyleSheet,Text,TouchableOpacity,View} from "react-native";
+import {StyleSheet,Text,TouchableOpacity,View,useColorScheme} from "react-native";
 import {useAudio} from "../../src/audio/AudioProvider";
+import {useAppSettings,getThemePalette} from "../../src/settings/SettingsProvider";
 
 function MiniPlayer(){
  const router=useRouter();const segments=useSegments();const {activeTrack,status,togglePlayback}=useAudio();
@@ -13,7 +14,7 @@ function MiniPlayer(){
   <MaterialCommunityIcons name="playlist-music" size={21} color="#FFB5D1"/>
  </TouchableOpacity>
 }
-export default function TabLayout(){const segments=useSegments();const immersiveFlow=segments.includes("flow");return <View style={s.root}><Tabs screenOptions={{headerShown:false,tabBarStyle:immersiveFlow?{...s.tabBar,display:"none"}:s.tabBar,tabBarActiveTintColor:"#FF9CC4",tabBarInactiveTintColor:"#887B90",tabBarLabelStyle:s.label,tabBarItemStyle:{paddingTop:5},sceneStyle:{backgroundColor:"#160D1C"}}}>
+export default function TabLayout(){const segments=useSegments();const immersiveFlow=segments.includes("flow");const {theme}=useAppSettings();const palette=getThemePalette(theme,useColorScheme());return <View style={[s.root,{backgroundColor:palette.background}]}><Tabs screenOptions={{headerShown:false,tabBarStyle:immersiveFlow?{...s.tabBar,display:"none"}:{...s.tabBar,backgroundColor:palette.surface,borderTopColor:palette.border},tabBarActiveTintColor:palette.accent,tabBarInactiveTintColor:palette.muted,tabBarLabelStyle:s.label,tabBarItemStyle:{paddingTop:5},sceneStyle:{backgroundColor:palette.background}}}>
  <Tabs.Screen name="index" options={{title:"Home",tabBarIcon:({color,size})=><MaterialCommunityIcons name="home-variant" color={typeof color === "string" ? color : "#887B90"} size={size}/>}}/>
  <Tabs.Screen name="discover" options={{title:"Discover",tabBarIcon:({color,size})=><MaterialCommunityIcons name="compass-outline" color={typeof color === "string" ? color : "#887B90"} size={size}/>}}/>
  <Tabs.Screen name="search" options={{title:"Search",tabBarIcon:({color,size})=><MaterialCommunityIcons name="magnify" color={typeof color === "string" ? color : "#887B90"} size={size+3}/>}}/>
