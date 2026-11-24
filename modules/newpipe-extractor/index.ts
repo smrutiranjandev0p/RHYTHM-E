@@ -28,6 +28,7 @@ type NativeNewPipeModule = {
   getLibraryInfo(): NewPipeLibraryInfo;
   getEngineInfo(): RhythmResolverEngineInfo;
   validateCataloguePlaybackUrl(url: string): { valid: boolean; sourceId: string };
+  resolveCataloguePlaybackUrl(url: string, mediaId: string): Promise<{ mediaId: string; playbackUrl: string; mimeType: string | null; sourceId: string; expiresAtEpochMs: number | null }>;
 };
 
 const nativeModule = () =>
@@ -41,6 +42,11 @@ export function getNewPipeLibraryInfo(): NewPipeLibraryInfo {
 /** Reports native resolver-core capabilities. */
 export function getRhythmResolverEngineInfo(): RhythmResolverEngineInfo {
   return nativeModule().getEngineInfo();
+}
+
+/** Resolves an authorised catalogue URL through the native Kotlin coordinator. */
+export function resolveCataloguePlaybackUrl(url: string, mediaId: string) {
+  return nativeModule().resolveCataloguePlaybackUrl(url, mediaId);
 }
 
 /** Validates HTTPS playback URLs from RHYTHM E's authorised open catalogues. */
