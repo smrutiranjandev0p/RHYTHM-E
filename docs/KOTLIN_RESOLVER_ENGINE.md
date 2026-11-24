@@ -2,14 +2,16 @@
 
 ## Scope
 
-This is an isolated native Kotlin resolver core behind the existing Expo module. It does not change React Native screens, navigation, the current Expo Audio player, or the app's visual design.
+This is an isolated native Kotlin resolver subsystem behind the existing Expo module. React Native screens, navigation and the existing Expo Audio player are retained.
 
 ## Architecture
 
 ```
 React Native UI (unchanged)
         |
-Existing Expo native-module boundary
+Existing AudioProvider / Expo Audio
+        |
+Native Expo module boundary
         |
 ResolverRegistry
         |
@@ -17,34 +19,35 @@ StreamResolveCoordinator
   |       |        |
 dedupe   cache   prefetch cancellation
         |
-Provider adapters (to be registered)
+AuthorisedCatalogueResolver
         |
-Existing playback handoff (not wired yet)
+HTTPS URL validation for Audius, Internet Archive,
+and Wikimedia Commons catalogue URLs
+        |
+Existing Expo Audio playback handoff
 ```
 
-## Implemented in this branch
+## Implemented
 
-- Normalized `ResolvedMedia` model.
-- Provider-neutral `MediaResolver` contract.
+- Normalized `ResolvedMedia` model and `MediaResolver` contract.
 - Ordered `ResolverRegistry` for primary/fallback adapters.
 - `StreamResolveCoordinator` with concurrent-request sharing, bounded in-memory cache, expiry checks and cancellable prefetch.
-- Typed resolver failures.
-- TypeScript metadata method to inspect the native engine capability state.
+- `AuthorisedCatalogueResolver` validating HTTPS URLs for RHYTHM E's existing Audius, Internet Archive and Wikimedia Commons catalogue hosts.
+- Native capability and URL-validation functions exposed through the existing Expo module.
+- Existing Expo Audio remains the playback engine; no player or UI replacement.
 
-## Not yet implemented
+## Not implemented
 
-- No InnerTubeX adapter is registered.
-- No NewPipe network downloader or service resolver is registered.
-- No YouTube stream resolution is enabled.
-- No playback URL is passed into Expo Audio or Media3.
-- No UI or navigation changes have been made.
+- No InnerTubeX YouTube adapter.
+- No NewPipe YouTube stream-extraction fallback.
+- No YouTube resolution or playback is enabled.
+- The coordinator is not yet wired to every search/feed call site; existing catalogue results continue to use the existing player flow.
+- No Android Gradle build or physical-device test has been completed for this feature branch.
 
-These are explicit integration gates, not working features. The coordinator is a foundation and must not be presented as a finished music-streaming engine.
+## Security
 
-## Security and caching
-
-Playback URLs may be signed and short-lived. The initial cache is memory-only; it does not persist signed URLs to disk or log them. Provider adapters must validate HTTPS destinations, respect provider authorization and return an expiry time whenever known.
+The URL validator permits HTTPS only, restricts hosts to known catalogue domains, rejects user-info and nonstandard ports, and does not log URLs. It is a validation boundary, not proof of copyright permission. Provider adapters must respect the provider's authorization and terms. Signed URLs should be treated as secrets and cached only in memory until expiry.
 
 ## Licensing
 
-NewPipeExtractor is GPL-3.0-or-later. Preserve upstream notices and include the corresponding source/licence materials required for distributed builds. This document and the original RHYTHM E resolver-core classes are independently written; no LastWave source files were copied into this module.
+NewPipeExtractor is GPL-3.0-or-later. Preserve upstream notices and include the corresponding source/licence materials required for distributed builds. The RHYTHM E resolver-core and catalogue URL validator in this branch are independently written; no LastWave source files were copied.
