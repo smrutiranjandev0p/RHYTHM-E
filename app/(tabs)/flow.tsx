@@ -1,4 +1,6 @@
 import {useEffect,useRef,useState} from "react";
+import {useColorScheme} from "react-native";
+import {useAppSettings,getThemePalette} from "../../src/settings/SettingsProvider";
 import type {ComponentRef} from "react";
 import {useRouter} from "expo-router";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
@@ -9,6 +11,7 @@ import ProfileButton from "../../src/components/ProfileButton";
 const palettes=["#8E3D68","#51417D","#276A68","#A85A36","#3E587E","#7255A5"];
 const symbols=["waveform","music-note","headphones","music-clef-treble","equalizer","audio-video"];
 export default function FlowScreen(){
+ const {theme}=useAppSettings();const p=getThemePalette(theme,useColorScheme());
  const router=useRouter();const {height}=useWindowDimensions();
  const {tracks,activeIndex,status,playTrack,togglePlayback,favorites,toggleFavorite}=useAudio();
  const [page,setPage]=useState(Math.max(0,activeIndex));
@@ -21,9 +24,9 @@ export default function FlowScreen(){
  const go=(index:number)=>{if(!tracks.length)return;const next=Math.max(0,Math.min(tracks.length-1,index));scroll.current?.scrollTo({y:next*pageHeight,animated:true});setPage(next);if(next!==activeIndex)playTrack(next);};
  const current=tracks[page];const isFavorite=!!current&&favorites.includes(current.id);
  const percent=activeIndex===page&&status.duration>0?Math.min(100,Math.max(0,status.currentTime/status.duration*100)):0;
- if(!tracks.length)return <View style={s.emptyScreen}><View style={s.top}><Text style={s.kicker}>RHYTHM E FLOW</Text><ProfileButton/></View><View style={s.emptyArt}><MaterialCommunityIcons name="waveform" size={75} color="#FFE1ED"/></View><Text style={s.emptyTitle}>Swipe into your sound.</Text><Text style={s.emptyText}>Your vertical music feed is ready. Import songs from your phone and swipe up or down to move between tracks.</Text><TouchableOpacity style={s.import} onPress={()=>router.push("/library")}><MaterialCommunityIcons name="folder-music" size={20} color="#FFF"/><Text style={s.importText}>Open your Library</Text></TouchableOpacity><Text style={s.hint}>UP NEXT. DOWN PREVIOUS. YOUR MUSIC, YOUR FLOW.</Text></View>;
- return <View style={s.screen}>
-  <View style={s.header}><View><Text style={s.kicker}>RHYTHM E</Text><Text style={s.headerTitle}>Flow</Text></View><View style={{flexDirection:"row",alignItems:"center",gap:9}}><TouchableOpacity style={s.headerButton} onPress={()=>router.push("/library")}><MaterialCommunityIcons name="playlist-music" size={22} color="#FFF"/></TouchableOpacity><ProfileButton/></View></View>
+ if(!tracks.length)return <View style={[s.emptyScreen,{backgroundColor:p.background}]}><View style={s.top}><Text style={[s.kicker,{color:p.accent}]}>RHYTHM E FLOW</Text><ProfileButton/></View><View style={s.emptyArt}><MaterialCommunityIcons name="waveform" size={75} color="#FFE1ED"/></View><Text style={[s.emptyTitle,{color:p.text}]}>Swipe into your sound.</Text><Text style={[s.emptyText,{color:p.muted}]}>Your vertical music feed is ready. Import songs from your phone and swipe up or down to move between tracks.</Text><TouchableOpacity style={s.import} onPress={()=>router.push("/library")}><MaterialCommunityIcons name="folder-music" size={20} color="#FFF"/><Text style={s.importText}>Open your Library</Text></TouchableOpacity><Text style={[s.hint,{color:p.muted}]}>UP NEXT. DOWN PREVIOUS. YOUR MUSIC, YOUR FLOW.</Text></View>;
+ return <View style={[s.screen,{backgroundColor:p.background}]}>
+  <View style={[s.header,{backgroundColor:p.background}]}><View><Text style={[s.kicker,{color:p.accent}]}>RHYTHM E</Text><Text style={[s.headerTitle,{color:p.text}]}>Flow</Text></View><View style={{flexDirection:"row",alignItems:"center",gap:9}}><TouchableOpacity style={s.headerButton} onPress={()=>router.push("/library")}><MaterialCommunityIcons name="playlist-music" size={22} color="#FFF"/></TouchableOpacity><ProfileButton/></View></View>
   <ScrollView ref={scroll} pagingEnabled snapToInterval={pageHeight} decelerationRate="fast" showsVerticalScrollIndicator={false} onMomentumScrollEnd={onEnd} contentOffset={{x:0,y:Math.max(0,activeIndex)*pageHeight}}>
    {tracks.map((track,index)=>{const selected=index===page;const liked=favorites.includes(track.id);return <View key={track.id} style={[s.page,{height:pageHeight}]}>
     <View style={[s.artwork,{backgroundColor:palettes[index%palettes.length]}]}>
@@ -33,8 +36,8 @@ export default function FlowScreen(){
      <Text style={s.artLabel}>RHYTHM E • FLOW SESSION</Text>
      <View style={s.artTop}><Text style={s.artTag}>NOW PLAYING</Text><Text style={s.artIndex}>{String(index+1).padStart(2,"0")} / {String(tracks.length).padStart(2,"0")}</Text></View>
     </View>
-    <View style={s.trackInfo}><View style={{flex:1}}><Text style={s.trackName} numberOfLines={2}>{track.name}</Text><Text style={s.artist}>{track.artist}</Text></View><TouchableOpacity onPress={()=>toggleFavorite(track.id)} style={s.iconButton}><MaterialCommunityIcons name={liked?"heart":"heart-outline"} size={26} color={liked?"#FF8DBB":"#FFF"}/></TouchableOpacity><TouchableOpacity onPress={()=>router.push("/lyrics/"+track.id)} style={s.iconButton}><MaterialCommunityIcons name="text-box-outline" size={25} color="#FFF"/></TouchableOpacity></View>
-    <View style={s.progress}><View style={[s.progressFill,{width:selected?percent+"%":"0%"}]}/></View>
+    <View style={s.trackInfo}><View style={{flex:1}}><Text style={[s.trackName,{color:p.text}]} numberOfLines={2}>{track.name}</Text><Text style={[s.artist,{color:p.muted}]}>{track.artist}</Text></View><TouchableOpacity onPress={()=>toggleFavorite(track.id)} style={s.iconButton}><MaterialCommunityIcons name={liked?"heart":"heart-outline"} size={26} color={liked?"#FF8DBB":"#FFF"}/></TouchableOpacity><TouchableOpacity onPress={()=>router.push("/lyrics/"+track.id)} style={s.iconButton}><MaterialCommunityIcons name="text-box-outline" size={25} color="#FFF"/></TouchableOpacity></View>
+    <View style={[s.progress,{backgroundColor:p.border}]}><View style={[s.progressFill,{width:selected?percent+"%":"0%"}]}/></View>
     <View style={s.controls}><TouchableOpacity onPress={()=>go(Math.max(0,index-1))}><MaterialCommunityIcons name="skip-previous" size={31} color="#FFF"/></TouchableOpacity><TouchableOpacity style={s.playButton} onPress={()=>{if(activeIndex!==index)playTrack(index);else togglePlayback();}}><MaterialCommunityIcons name={activeIndex===index&&status.playing?"pause":"play"} size={31} color="#231522"/></TouchableOpacity><TouchableOpacity onPress={()=>go(Math.min(tracks.length-1,index+1))}><MaterialCommunityIcons name="skip-next" size={31} color="#FFF"/></TouchableOpacity></View>
     <Text style={s.swipeHint}>SWIPE UP FOR NEXT  •  SWIPE DOWN FOR PREVIOUS</Text>
    </View>})}

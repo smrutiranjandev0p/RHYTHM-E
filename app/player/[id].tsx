@@ -1,4 +1,6 @@
 import {useLocalSearchParams,useRouter} from "expo-router";
+import {useColorScheme} from "react-native";
+import {useAppSettings,getThemePalette} from "../../src/settings/SettingsProvider";
 import {useState} from "react";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {ScrollView,StyleSheet,Text,TouchableOpacity,View} from "react-native";
@@ -6,22 +8,23 @@ import {useAudio} from "../../src/audio/AudioProvider";
 
 const clock=(n:number)=>{if(!Number.isFinite(n))return "0:00";const m=Math.floor(n/60);const sec=Math.floor(n%60);return m+":"+String(sec).padStart(2,"0");};
 export default function PlayerScreen(){
+ const {theme}=useAppSettings();const p=getThemePalette(theme,useColorScheme());
  const {id}=useLocalSearchParams<{id:string}>();const router=useRouter();const {tracks,activeIndex,activeTrack,status,togglePlayback,skipNext,skipPrevious,seekTo,toggleFavorite,favorites,playTrack}=useAudio();
  const [showQueue,setShowQueue]=useState(false);
  const liked=!!activeTrack&&favorites.includes(activeTrack.id);
  const hasTrack=!!activeTrack;const title=activeTrack?.name||(id==="featured"?"The Midnight Edit":String(id||"Your track").replace(/-/g," "));
  const duration=status.duration||0;const progress=duration>0?Math.min(100,status.currentTime/duration*100):0;
- return <View style={s.screen}>
-  <View style={s.header}><TouchableOpacity onPress={()=>router.back()} style={s.back}><MaterialCommunityIcons name="chevron-down" size={28} color="#FFF"/></TouchableOpacity><Text style={s.headerText}>{hasTrack?"NOW PLAYING":"PLAYER PREVIEW"}</Text><TouchableOpacity onPress={()=>setShowQueue(!showQueue)}><MaterialCommunityIcons name="playlist-music" size={24} color="#FFF"/></TouchableOpacity></View>
+ return <View style={[s.screen,{backgroundColor:p.background}]}>
+  <View style={s.header}><TouchableOpacity onPress={()=>router.back()} style={s.back}><MaterialCommunityIcons name="chevron-down" size={28} color="#FFF"/></TouchableOpacity><Text style={[s.headerText,{color:p.muted}]}>{hasTrack?"NOW PLAYING":"PLAYER PREVIEW"}</Text><TouchableOpacity onPress={()=>setShowQueue(!showQueue)}><MaterialCommunityIcons name="playlist-music" size={24} color="#FFF"/></TouchableOpacity></View>
   <View style={s.art}><View style={s.sun}/><View style={s.orbit}/><View style={s.disc}><MaterialCommunityIcons name="music-note-eighth" size={72} color="#FFF"/></View><Text style={s.artLabel}>RHYTHM E</Text></View>
-  <View style={s.song}><View style={{flex:1}}><Text style={s.title} numberOfLines={1}>{title}</Text><Text style={s.artist}>{activeTrack?.artist||"RHYTHM E • DEMO"}</Text></View><TouchableOpacity onPress={()=>activeTrack&&toggleFavorite(activeTrack.id)}><MaterialCommunityIcons name={liked?"heart":"heart-outline"} size={25} color="#FF8DBB"/></TouchableOpacity></View>
+  <View style={s.song}><View style={{flex:1}}><Text style={[s.title,{color:p.text}]} numberOfLines={1}>{title}</Text><Text style={[s.artist,{color:p.muted}]}>{activeTrack?.artist||"RHYTHM E • DEMO"}</Text></View><TouchableOpacity onPress={()=>activeTrack&&toggleFavorite(activeTrack.id)}><MaterialCommunityIcons name={liked?"heart":"heart-outline"} size={25} color="#FF8DBB"/></TouchableOpacity></View>
   <View style={s.wave}>{Array.from({length:39},(_,i)=><View key={i} style={[s.bar,{height:7+(i*17%25),opacity:i<Math.round(progress/100*39)?1:.35}]}/>)}</View>
-  <View style={s.progressTrack}><View style={[s.progressFill,{width:progress+"%"}]}/></View>
-  <View style={s.times}><Text style={s.muted}>{clock(status.currentTime||0)}</Text><Text style={s.muted}>{duration?clock(duration):"--:--"}</Text></View>
+  <View style={[s.progressTrack,{backgroundColor:p.border}]}><View style={[s.progressFill,{width:progress+"%"}]}/></View>
+  <View style={s.times}><Text style={[s.muted,{color:p.muted}]}>{clock(status.currentTime||0)}</Text><Text style={[s.muted,{color:p.muted}]}>{duration?clock(duration):"--:--"}</Text></View>
   {hasTrack?<View style={s.controls}><TouchableOpacity onPress={skipPrevious}><MaterialCommunityIcons name="skip-previous" size={34} color="#FFF"/></TouchableOpacity><TouchableOpacity onPress={()=>seekTo((status.currentTime||0)-15)}><MaterialCommunityIcons name="rewind-15" size={26} color="#D8C2DB"/></TouchableOpacity><TouchableOpacity style={s.play} onPress={togglePlayback}><MaterialCommunityIcons name={status.playing?"pause":"play"} size={34} color="#26111D"/></TouchableOpacity><TouchableOpacity onPress={()=>seekTo((status.currentTime||0)+15)}><MaterialCommunityIcons name="fast-forward-15" size={26} color="#D8C2DB"/></TouchableOpacity><TouchableOpacity onPress={skipNext}><MaterialCommunityIcons name="skip-next" size={34} color="#FFF"/></TouchableOpacity></View>:<TouchableOpacity style={s.importButton} onPress={()=>router.push("/(tabs)/library")}><MaterialCommunityIcons name="folder-music" size={19} color="#26111D"/><Text style={s.importText}>IMPORT MUSIC TO PLAY</Text></TouchableOpacity>}
-  {showQueue&&<View style={s.queue}><Text style={s.queueTitle}>UP NEXT · {tracks.length} TRACKS</Text><ScrollView style={{maxHeight:130}}>{tracks.map((track,index)=><TouchableOpacity key={track.id} style={s.queueItem} onPress={()=>playTrack(index)}><Text numberOfLines={1} style={[s.queueName,{color:index===activeIndex?"#FF9CC4":"#FFF"}]}>{index+1}. {track.name}</Text><Text style={s.queueArtist}>{track.artist}</Text></TouchableOpacity>)}</ScrollView></View>}
+  {showQueue&&<View style={[s.queue,{backgroundColor:p.surface,borderColor:p.border}]}><Text style={[s.queueTitle,{color:p.accent}]}>UP NEXT · {tracks.length} TRACKS</Text><ScrollView style={{maxHeight:130}}>{tracks.map((track,index)=><TouchableOpacity key={track.id} style={s.queueItem} onPress={()=>playTrack(index)}><Text numberOfLines={1} style={[s.queueName,{color:index===activeIndex?"#FF9CC4":"#FFF"}]}>{index+1}. {track.name}</Text><Text style={[s.queueArtist,{color:p.muted}]}>{track.artist}</Text></TouchableOpacity>)}</ScrollView></View>}
   <TouchableOpacity style={s.lyricsButton} onPress={()=>router.push({pathname:"/lyrics/[id]",params:{id:String(id||"midnight-drive")}})}><MaterialCommunityIcons name="text" size={17} color="#FFF"/><Text style={s.lyricsText}>OPEN LYRICS</Text><MaterialCommunityIcons name="chevron-right" size={18} color="#FFF"/></TouchableOpacity>
-  <Text style={s.info}>{hasTrack?"Playing a file selected from your device.":"Choose a local audio file from your Library to start playback."}</Text>
+  <Text style={[s.info,{color:p.muted}]}>{hasTrack?"Playing a file selected from your device.":"Choose a local audio file from your Library to start playback."}</Text>
  </View>
 }
 const s=StyleSheet.create({
