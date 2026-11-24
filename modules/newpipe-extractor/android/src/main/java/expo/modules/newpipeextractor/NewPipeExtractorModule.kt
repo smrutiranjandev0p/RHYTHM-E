@@ -1,5 +1,6 @@
 package expo.modules.newpipeextractor
 
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.CoroutineScope
@@ -58,7 +59,7 @@ class NewPipeExtractorModule : Module() {
       )
     }
 
-    AsyncFunction("resolveCataloguePlaybackUrl") { url: String, mediaId: String ->
+    AsyncFunction("resolveCataloguePlaybackUrl") Coroutine { url: String, mediaId: String ->
       val resolved = coordinator.resolveForPlayback(url, mediaId)
       mapOf(
         "mediaId" to resolved.mediaId,
