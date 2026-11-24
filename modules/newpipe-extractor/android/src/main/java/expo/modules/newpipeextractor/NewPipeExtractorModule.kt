@@ -3,9 +3,12 @@ package expo.modules.newpipeextractor
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import org.schabi.newpipe.extractor.NewPipe
+import expo.modules.newpipeextractor.engine.AuthorisedCatalogueResolver
 
-/** Native metadata and resolver-engine capability bridge. */
+/** Native metadata and authorised-catalogue validation bridge. */
 class NewPipeExtractorModule : Module() {
+  private val catalogueResolver = AuthorisedCatalogueResolver()
+
   override fun definition() = ModuleDefinition {
     Name("NewPipeExtractor")
 
@@ -28,12 +31,20 @@ class NewPipeExtractorModule : Module() {
     Function("getEngineInfo") {
       mapOf(
         "engineLanguage" to "Kotlin",
-        "architecture" to "ResolverRegistry -> StreamResolveCoordinator -> Playback handoff",
+        "architecture" to "ResolverRegistry -> StreamResolveCoordinator -> authorised catalogue validation -> Expo Audio handoff",
         "requestDeduplication" to true,
         "memoryCache" to true,
         "prefetchCancellation" to true,
-        "providerAdaptersConfigured" to false,
-        "youtubeResolutionEnabled" to false
+        "providerAdaptersConfigured" to true,
+        "youtubeResolutionEnabled" to false,
+        "playbackEngine" to "existing Expo Audio player"
+      )
+    }
+
+    Function("validateCataloguePlaybackUrl") { url: String ->
+      mapOf(
+        "valid" to catalogueResolver.validateHttpsUrl(url),
+        "sourceId" to catalogueResolver.sourceId
       )
     }
   }
