@@ -2,12 +2,22 @@ package expo.modules.newpipeextractor
 
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import org.schabi.newpipe.extractor.NewPipe
 import expo.modules.newpipeextractor.engine.AuthorisedCatalogueResolver
+import expo.modules.newpipeextractor.engine.ResolverRegistry
+import expo.modules.newpipeextractor.engine.StreamResolveCoordinator
 
-/** Native metadata and authorised-catalogue validation bridge. */
+/** Native resolver bridge for RHYTHM E's authorised open-catalogue URLs. */
 class NewPipeExtractorModule : Module() {
   private val catalogueResolver = AuthorisedCatalogueResolver()
+  private val resolverScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+  private val coordinator = StreamResolveCoordinator(
+    parentScope = resolverScope,
+    registry = ResolverRegistry(listOf(catalogueResolver)),
+  )
 
   override fun definition() = ModuleDefinition {
     Name("NewPipeExtractor")
@@ -31,7 +41,7 @@ class NewPipeExtractorModule : Module() {
     Function("getEngineInfo") {
       mapOf(
         "engineLanguage" to "Kotlin",
-        "architecture" to "ResolverRegistry -> StreamResolveCoordinator -> authorised catalogue validation -> Expo Audio handoff",
+        "architecture" to "ResolverRegistry -> StreamResolveCoordinator -> authorised catalogue adapter -> Expo Audio",
         "requestDeduplication" to true,
         "memoryCache" to true,
         "prefetchCancellation" to true,
@@ -45,6 +55,17 @@ class NewPipeExtractorModule : Module() {
       mapOf(
         "valid" to catalogueResolver.validateHttpsUrl(url),
         "sourceId" to catalogueResolver.sourceId
+      )
+    }
+
+    AsyncFunction("resolveCataloguePlaybackUrl") { url: String, mediaId: String ->
+      val resolved = coordinator.resolveForPlayback(url, mediaId)
+      mapOf(
+        "mediaId" to resolved.mediaId,
+        "playbackUrl" to resolved.playbackUrl,
+        "mimeType" to resolved.mimeType,
+        "sourceId" to resolved.sourceId,
+        "expiresAtEpochMs" to resolved.expiresAtEpochMs
       )
     }
   }
