@@ -25,7 +25,11 @@ export function SettingsProvider({children}:{children:React.ReactNode}){
  const [prefs,setPrefs]=useState<Preferences>(defaults);const [ready,setReady]=useState(false);
  useEffect(()=>{let live=true;AsyncStorage.getItem(KEY).then(raw=>{if(raw&&live){const saved=JSON.parse(raw) as Partial<Preferences>;setPrefs({...defaults,...saved});}}).catch(()=>{}).finally(()=>{if(live)setReady(true);});return()=>{live=false;};},[]);
  useEffect(()=>{if(!ready)return;AsyncStorage.setItem(KEY,JSON.stringify(prefs)).catch(()=>{});},[prefs,ready]);
- useEffect(()=>{Appearance.setColorScheme(prefs.theme==="System"?"unspecified":prefs.theme==="Light"?"light":"dark");},[prefs.theme]);
+ useEffect(()=>{
+  // React Native expects null to follow the device setting; "unspecified" is not a valid color scheme.
+  const scheme=prefs.theme==="System"?null:prefs.theme==="Light"?"light":"dark";
+  try{Appearance.setColorScheme(scheme);}catch(error){console.warn("RHYTHM E could not apply appearance preference",error);}
+ },[prefs.theme]);
  const setTheme=async(theme:AppTheme)=>setPrefs(p=>({...p,theme}));
  const setHaptics=async(enabled:boolean)=>setPrefs(p=>({...p,haptics:enabled}));
  const setNotifications=async(enabled:boolean)=>{
