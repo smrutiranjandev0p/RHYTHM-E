@@ -1,4 +1,5 @@
-import {useState} from "react";
+import {useEffect,useState} from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {useRouter} from "expo-router";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {useAudio} from "../src/audio/AudioProvider";
@@ -7,6 +8,7 @@ import {ScrollView,StyleSheet,Text,TouchableOpacity,View} from "react-native";
 const presets=["REELSONIC Original","REELSONIC Bass","REELSONIC Vocal","REELSONIC Air","Warm","Custom"];
 const bands=[{name:"60 Hz",label:"SUB BASS"},{name:"230 Hz",label:"BASS"},{name:"910 Hz",label:"MIDS"},{name:"3.6 kHz",label:"PRESENCE"},{name:"14 kHz",label:"AIR"}];
 const timers=["Off","15 min","30 min","45 min","60 min"];
+const PREFS_KEY="rhythm-e.sound-lab.v1";
 
 export default function SoundLabScreen(){
  const router=useRouter();
@@ -18,6 +20,9 @@ export default function SoundLabScreen(){
  const [crossfade,setCrossfade]=useState(false);
  const [timer,setTimer]=useState("Off");
  const [quality,setQuality]=useState("High");
+ const [preferencesReady,setPreferencesReady]=useState(false);
+ useEffect(()=>{let live=true;AsyncStorage.getItem(PREFS_KEY).then(raw=>{if(!raw||!live)return;try{const saved=JSON.parse(raw);setPreset(typeof saved.preset==="string"?saved.preset:"Balanced");setLevels(Array.isArray(saved.levels)&&saved.levels.length===5?saved.levels.map((v:number)=>Math.max(-6,Math.min(6,Number(v)||0))):[0,0,0,0,0]);setBass(!!saved.bass);setNormalize(saved.normalize!==false);setCrossfade(!!saved.crossfade);setQuality(typeof saved.quality==="string"?saved.quality:"High");}catch{/* Keep defaults if saved settings are damaged. */}}).catch(()=>{}).finally(()=>{if(live)setPreferencesReady(true);});return()=>{live=false;};},[]);
+ useEffect(()=>{if(!preferencesReady)return;AsyncStorage.setItem(PREFS_KEY,JSON.stringify({preset,levels,bass,normalize,crossfade,quality})).catch(()=>{});},[preferencesReady,preset,levels,bass,normalize,crossfade,quality]);
  const change=(index:number,delta:number)=>{setLevels(old=>old.map((v,i)=>i===index?Math.max(-6,Math.min(6,v+delta)):v));setPreset("Custom");};
  const applyPreset=(name:string)=>{setPreset(name);const maps:Record<string,number[]>={"REELSONIC Original":[2,1,0,2,1],"REELSONIC Bass":[4,3,1,0,1],"REELSONIC Vocal":[-2,0,3,3,1],"REELSONIC Air":[-1,-1,0,3,4],Warm:[2,2,1,-1,-1]};setLevels(maps[name]||[0,0,0,0,0]);};
  const Toggle=({label,detail,value,onPress,icon}:{label:string;detail:string;value:boolean;onPress:()=>void;icon:string})=><TouchableOpacity style={s.setting} onPress={onPress}><View style={s.settingIcon}><MaterialCommunityIcons name={icon as any} size={20} color="#FF9CC4"/></View><View style={{flex:1}}><Text style={s.settingTitle}>{label}</Text><Text style={s.settingDetail}>{detail}</Text></View><View style={[s.switch,{backgroundColor:value?"#FF75AB":"#49364D"}]}><View style={[s.knob,{alignSelf:value?"flex-end":"flex-start"}]}/></View></TouchableOpacity>;
@@ -28,7 +33,7 @@ export default function SoundLabScreen(){
   <View style={s.panel}>
    <View style={s.presetWrap}>{presets.map(p=><TouchableOpacity key={p} onPress={()=>applyPreset(p)} style={[s.preset,{backgroundColor:preset===p?"#FF75AB":"#332338"}]}><Text style={[s.presetText,{color:preset===p?"#28111E":"#E6D4E8"}]}>{p}</Text></TouchableOpacity>)}</View>
    {bands.map((b,i)=><View key={b.name} style={s.band}><View style={{width:70}}><Text style={s.bandName}>{b.name}</Text><Text style={s.bandLabel}>{b.label}</Text></View><TouchableOpacity style={s.adjust} onPress={()=>change(i,-1)}><MaterialCommunityIcons name="minus" size={17} color="#FFF"/></TouchableOpacity><View style={s.meter}><View style={s.meterCenter}/><View style={[s.meterFill,{width:(levels[i]+6)/12*100+"%"}]}/></View><TouchableOpacity style={s.adjust} onPress={()=>change(i,1)}><MaterialCommunityIcons name="plus" size={17} color="#FFF"/></TouchableOpacity><Text style={s.value}>{levels[i]>0?"+":""}{levels[i]}</Text></View>)}
-   <Text style={s.hint}>Tap + or − to adjust each band. Values range from −6 to +6.</Text>
+   <Text style={s.hint}>Tap + or − to adjust each band. Values range from −6 to +6. Your choices are saved on this device.</Text>
   </View>
   <View style={s.sectionHead}><Text style={s.sectionTitle}>Playback enhancement</Text><Text style={s.sectionMeta}>PERSONAL SETTINGS</Text></View>
   <View style={s.panel}>
@@ -42,7 +47,7 @@ export default function SoundLabScreen(){
    <View style={s.separator}/><Text style={s.optionTitle}>Sleep timer</Text><View style={s.optionRow}>{timers.map(t=><TouchableOpacity key={t} onPress={()=>{setTimer(t);if(t==="Off")cancelSleepTimer();else setSleepTimer(Number.parseInt(t,10));}} style={[s.timer,{backgroundColor:timer===t?"#FF75AB":"#332338"}]}><Text style={[s.qualityText,{color:timer===t?"#28111E":"#E6D4E8"}]}>{t}</Text></TouchableOpacity>)}</View>
   </View>
   {sleepTimerEndsAt&&<Text style={s.hint}>Sleep timer active — playback will pause automatically.</Text>}
-  <View style={s.notice}><MaterialCommunityIcons name="information-outline" size={17} color="#FF9CC4"/><Text style={s.noticeText}>REELSONIC is not active yet: these controls currently change only the on-screen preview and do not process playback. Expo Audio does not expose the signal-processing graph needed to apply these EQ bands to its player. The next engineering step is a dedicated audio graph with native playback, background controls and safe output headroom. No loudness boost will be enabled until limiter and clipping behaviour are validated on real devices. Quality options depend on a future licensed music provider.</Text></View>
+  <View style={s.notice}><MaterialCommunityIcons name="information-outline" size={17} color="#FF9CC4"/><Text style={s.noticeText}>Your Sound Lab preferences are saved on this device and restored when the app restarts. Important: the EQ bands, bass enhancement, volume normalisation, crossfade and quality choices are currently preference/preview controls; they do not yet process the audio signal. A native audio-processing pipeline and a licensed streaming provider are required before those features can truthfully be marked active. The sleep timer is functional and pauses local playback at the selected time.</Text></View>
   <View style={{height:28}}/>
  </ScrollView>
 }
