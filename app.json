@@ -6,45 +6,19 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.rhythme.musicapp"
-    },
-    "android": {
-      "package": "com.rhythme.musicapp"
-    },
+    "ios": {"supportsTablet": true, "bundleIdentifier": "com.rhythme.musicapp"},
+    "android": {"package": "com.rhythme.musicapp"},
     "plugins": [
       "expo-router",
-      [
-        "expo-audio",
-        {
-          "enableBackgroundPlayback": true,
-          "enableBackgroundRecording": false,
-          "recordAudioAndroid": false,
-          "microphonePermission": false
-        }
-      ],
+      ["expo-audio", {"enableBackgroundPlayback": true, "enableBackgroundRecording": false, "recordAudioAndroid": false, "microphonePermission": false}],
       "expo-notifications",
       "react-native-audio-api",
       "./plugins/withNewPipeExtractor",
-      "./plugins/withRhythmEIcon",
       "./plugins/withRhythmEIcon"
     ],
-    "experiments": {
-      "typedRoutes": true
-    },
-    "updates": {
-      "url": "https://u.expo.dev/1a76d9ce-9d14-4199-85d2-fd2cefeb543d",
-      "checkAutomatically": "ON_LOAD",
-      "fallbackToCacheTimeout": 0
-    },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
-    "extra": {
-      "eas": {
-        "projectId": "1a76d9ce-9d14-4199-85d2-fd2cefeb543d"
-      }
-    }
+    "experiments": {"typedRoutes": true},
+    "updates": {"url": "https://u.expo.dev/1a76d9ce-9d14-4199-85d2-fd2cefeb543d", "checkAutomatically": "ON_LOAD", "fallbackToCacheTimeout": 0},
+    "runtimeVersion": {"policy": "appVersion"},
+    "extra": {"eas": {"projectId": "1a76d9ce-9d14-4199-85d2-fd2cefeb543d"}}
   }
 }
