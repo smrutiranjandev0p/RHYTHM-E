@@ -4,10 +4,11 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import org.schabi.newpipe.extractor.NewPipe
 
-/** Read-only metadata bridge. No network requests or media stream resolution. */
+/** Native metadata and resolver-engine capability bridge. */
 class NewPipeExtractorModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("NewPipeExtractor")
+
     Function("getLibraryInfo") {
       val services = NewPipe.getServices().map { service ->
         mapOf(
@@ -21,6 +22,18 @@ class NewPipeExtractorModule : Module() {
         "license" to "GPL-3.0-or-later",
         "services" to services,
         "networkExtractionEnabled" to false
+      )
+    }
+
+    Function("getEngineInfo") {
+      mapOf(
+        "engineLanguage" to "Kotlin",
+        "architecture" to "ResolverRegistry -> StreamResolveCoordinator -> Playback handoff",
+        "requestDeduplication" to true,
+        "memoryCache" to true,
+        "prefetchCancellation" to true,
+        "providerAdaptersConfigured" to false,
+        "youtubeResolutionEnabled" to false
       )
     }
   }
