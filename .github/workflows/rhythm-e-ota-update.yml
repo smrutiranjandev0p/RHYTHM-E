@@ -31,8 +31,9 @@ jobs:
         run: npm install
       - name: Validate Expo project configuration
         run: npx expo config --type public
-      - name: Publish OTA update to preview channel
+      - name: Publish Android OTA update to preview channel
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
           UPDATE_MESSAGE: ${{ github.event.inputs.message || format('development {0}', github.sha) }}
-        run: npx eas-cli@latest update --channel preview --message "$UPDATE_MESSAGE" --non-interactive
+          CI: "1"
+        run: npx eas-cli@latest update --channel preview --platform android --message "$UPDATE_MESSAGE"
