@@ -136,7 +136,19 @@ npx expo start
 
 **Native audio note:** Background playback and lock-screen behaviour must be verified in a native development build on a real device. Expo Go is not a substitute for validating the complete native audio experience. Do not treat a successful Metro start as proof that native playback works.
 
-## ◉ 06 / DEVELOPMENT ROADMAP
+## ◉ 06 / ANDROID BUILD ARTIFACTS
+
+The `development` branch runs Android native verification on every push and through manual workflow dispatch.
+
+The workflow produces two GitHub Actions artifacts:
+- **Development Debug APK** — for Metro-connected development and debugging.
+- **Standalone Release APK** — includes the embedded Android JavaScript bundle and is intended to launch without a Metro server.
+
+To retrieve a build, open the repository's **Actions** tab, select the successful **Android native verification** run, and download the relevant artifact. These CI artifacts are temporary build outputs, not Play Store releases. A successful CI build confirms compilation and bundle packaging; physical-device playback, background audio, notifications and upgrade behaviour still require device QA.
+
+GitHub Actions workflow: [Android native verification](.github/workflows/android-native-verification.yml).
+
+## ◉ 07 / DEVELOPMENT ROADMAP
 
 | PHASE | MILESTONE | STATUS |
 |:--:|:--|:--:|
@@ -150,7 +162,7 @@ npx expo start
 
 The detailed plan and validation gates live in [FEATURE_ROADMAP.md](docs/FEATURE_ROADMAP.md).
 
-## ◉ 07 / IMPORTANT ENGINEERING NOTES
+## ◉ 08 / IMPORTANT ENGINEERING NOTES
 
 - **Local files:** Audio selected by the user is copied into RHYTHM E's private app Documents storage. Clearing app data or uninstalling the app removes those private copies.
 - **Older imports:** The app attempts to migrate older picker-cache tracks on startup when their original files are still accessible.
@@ -158,10 +170,10 @@ The detailed plan and validation gates live in [FEATURE_ROADMAP.md](docs/FEATURE
 - **REELSONIC:** The equalizer controls and preset curves are currently design previews. No EQ, compressor, limiter or loudness processing is active in playback.
 - **Online music:** RHYTHM E searches creator-published Audius streams, then licence-filtered Creative Commons/Public Domain audio from Internet Archive and Wikimedia Commons. The sources operate independently, so a failure in one does not empty a search. Audius availability is creator-controlled; archive and Commons licence metadata must be checked on the source page. These sources do not promise every commercial release.
 - **YouTube:** RHYTHM E opens official YouTube search. It does not extract, relay, download or cache YouTube audio. NewPipeExtractor v0.27.1 is included through a local Expo Android module. Its React Native bridge exposes read-only library and service-capability metadata only; it does not search services, resolve streams or play third-party media. Existing authorized catalogue adapters remain the playback sources.
-- **Native Android CI:** `.github/workflows/android-native-verification.yml` generates the Expo Android project, resolves Gradle dependencies and assembles a debug APK on pushes to `development`. A successful CI build verifies compilation, not physical-device playback.
+- **Native Android CI:** `.github/workflows/android-native-verification.yml` generates the Expo Android project and builds both a Metro-connected debug APK and a standalone release APK on pushes to `development`. The release workflow checks for the embedded `assets/index.android.bundle`. A successful CI build verifies compilation and bundle packaging, not physical-device playback.
 - **Testing:** Dependency checks, typechecking, native builds and physical-device playback must be completed before calling this release-ready.
 
-## ◉ 08 / MUSIC RIGHTS & RESPONSIBLE ACCESS
+## ◉ 09 / MUSIC RIGHTS & RESPONSIBLE ACCESS
 
 RHYTHM E is intended as a free-to-use, non-commercial project. That intention does not grant rights to copyrighted recordings or override a provider's terms.
 
@@ -181,7 +193,7 @@ See:
 - [REELSONIC DSP engineering plan](docs/REELSONIC_DSP.md)
 - [Third-party software licences](docs/THIRD_PARTY_LICENSES.md)
 
-## ◉ 09 / CONTRIBUTION & DEVELOPMENT RULES
+## ◉ 10 / CONTRIBUTION & DEVELOPMENT RULES
 
 RHYTHM E is actively evolving. Before proposing changes:
 
@@ -192,7 +204,7 @@ RHYTHM E is actively evolving. Before proposing changes:
 5. Never label a preview control as a working audio feature.
 6. Include device-test notes for native audio changes.
 
-## ◉ 10 / PROJECT STATUS
+## ◉ 11 / PROJECT STATUS
 
 <div align="center">
 
