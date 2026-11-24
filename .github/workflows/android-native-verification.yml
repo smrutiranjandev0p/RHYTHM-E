@@ -1,8 +1,10 @@
 name: Android native verification
 
 on:
-  push:
+  pull_request:
     branches: [development]
+  push:
+    branches: [feature/kotlin-stream-resolver-core]
   workflow_dispatch:
 
 jobs:
@@ -10,10 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - name: Checkout development
+      - name: Checkout tested branch or pull-request merge ref
         uses: actions/checkout@v4
-        with:
-          ref: development
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
@@ -35,7 +35,7 @@ jobs:
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: rhythm-e-development-debug-apk
+          name: rhythm-e-android-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 7
@@ -50,7 +50,7 @@ jobs:
       - name: Upload standalone release APK
         uses: actions/upload-artifact@v4
         with:
-          name: rhythm-e-development-standalone-release-apk
+          name: rhythm-e-android-standalone-release-apk
           path: android/app/build/outputs/apk/release/*.apk
           if-no-files-found: error
           retention-days: 14
