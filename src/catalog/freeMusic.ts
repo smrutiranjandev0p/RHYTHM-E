@@ -195,6 +195,38 @@ export async function searchCommonsMusic(query: string): Promise<FreeMusicTrack[
   });
 }
 
+/** Fetch current Audius trending tracks for the swipe-first Home feed. */
+export async function fetchTrendingAudiusMusic(): Promise<FreeMusicTrack[]> {
+  const payload = await requestJson<{ data?: AudiusTrack[] }>(
+    `${AUDIUS}/tracks/trending?time=week&limit=30`
+  );
+  return (payload.data || [])
+    .filter(track => track.id && track.title && !track.is_stream_gated && track.is_streamable !== false)
+    .map(track => ({
+      id: `audius:${track.id}`,
+      name: track.title!.trim(),
+      artist: track.user?.name?.trim() || track.user?.handle?.trim() || "Audius creator",
+      uri: `${AUDIUS}/tracks/${encodeURIComponent(track.id!)}/stream`,
+      source: "Audius" as const,
+      license: "Creator-published Audius stream; check the source page for usage terms.",
+      rightsLabel: "Trending on Audius · creator-published stream",
+      itemUrl: track.permalink ? `https://audius.co/${track.permalink}` : "https://audius.co",
+      artworkUrl: track.artwork?.["480x480"] || track.artwork?.["150x150"] || track.artwork?.["1000x1000"],
+      duration: typeof track.duration === "number" ? track.duration : undefined
+    }));
+}
+
+/** Lightweight taste ranking from liked and recently played artists. */
+export function rankForListenerTaste(candidates: FreeMusicTrack[], likedArtists: string[], recentArtists: string[]): FreeMusicTrack[] {
+  const liked = new Set(likedArtists.map(value => value.trim().toLowerCase()).filter(Boolean));
+  const recent = new Set(recentArtists.map(value => value.trim().toLowerCase()).filter(Boolean));
+  return candidates.map((track, index) => {
+    const artist = track.artist.trim().toLowerCase();
+    const score = (liked.has(artist) ? 100 : 0) + (recent.has(artist) ? 45 : 0) + Math.max(0, 30 - index) * 0.15;
+    return { track, score, index };
+  }).sort((a, b) => b.score - a.score || a.index - b.index).map(item => item.track);
+}
+
 /**
  * A best-effort online catalogue. A single upstream outage no longer makes
  * search unusable: tracks from the surviving source are still playable.

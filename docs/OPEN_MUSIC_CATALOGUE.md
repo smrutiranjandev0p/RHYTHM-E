@@ -6,11 +6,11 @@ The development branch uses open and creator-published sources. It does not prom
 
 ## Integrated sources
 
-- **Audius:** creator-published tracks searched through the public API. Stream availability and usage terms remain subject to the creator and Audius. A public stream is not represented as a blanket copyright licence.
+- **Audius:** creator-published tracks searched through the public API and current weekly trending tracks are fetched for the Home discovery feed. Stream availability and usage terms remain subject to the creator and Audius. A public stream is not represented as a blanket copyright licence.
 - **Internet Archive:** audio items are searched and their metadata is checked for supported Creative Commons or public-domain licence URLs before a playable file is offered. Metadata is uploader-provided; users should inspect the item page.
 - **Wikimedia Commons:** audio files are searched through the Commons API. Results are limited to CC0, CC BY, CC BY-SA and public-domain labels, with a link to the file description and attribution metadata.
 
-Each source is queried independently. If one source is unavailable, results from the other successful sources can still be returned. Playback uses the existing shared Expo Audio player and queue.
+The Home feed can blend the current Audius weekly trending list with the listener's recent/favourite artist affinity. This is a lightweight on-device ranking signal, not a machine-learning model or a claim to know a listener's full taste. Each source is queried independently. If one source is unavailable, results from the other successful sources can still be returned. Playback uses the existing shared Expo Audio player and queue.
 
 ## Attribution and rights
 
