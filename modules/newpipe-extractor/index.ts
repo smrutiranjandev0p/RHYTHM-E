@@ -21,19 +21,29 @@ export type RhythmResolverEngineInfo = {
   prefetchCancellation: boolean;
   providerAdaptersConfigured: boolean;
   youtubeResolutionEnabled: boolean;
+  playbackEngine: string;
 };
 
 type NativeNewPipeModule = {
   getLibraryInfo(): NewPipeLibraryInfo;
   getEngineInfo(): RhythmResolverEngineInfo;
+  validateCataloguePlaybackUrl(url: string): { valid: boolean; sourceId: string };
 };
+
+const nativeModule = () =>
+  requireNativeModule<NativeNewPipeModule>("NewPipeExtractor");
 
 /** Returns upstream library metadata; it does not resolve media. */
 export function getNewPipeLibraryInfo(): NewPipeLibraryInfo {
-  return requireNativeModule<NativeNewPipeModule>("NewPipeExtractor").getLibraryInfo();
+  return nativeModule().getLibraryInfo();
 }
 
-/** Reports native resolver-core capabilities; no provider adapter is enabled yet. */
+/** Reports native resolver-core capabilities. */
 export function getRhythmResolverEngineInfo(): RhythmResolverEngineInfo {
-  return requireNativeModule<NativeNewPipeModule>("NewPipeExtractor").getEngineInfo();
+  return nativeModule().getEngineInfo();
+}
+
+/** Validates HTTPS playback URLs from RHYTHM E's authorised open catalogues. */
+export function validateCataloguePlaybackUrl(url: string) {
+  return nativeModule().validateCataloguePlaybackUrl(url);
 }
