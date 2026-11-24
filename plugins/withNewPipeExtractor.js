@@ -1,6 +1,9 @@
 const { withSettingsGradle } = require("@expo/config-plugins");
 
 const MARKER = "RHYTHM_E_NEWPIPE_EXTRACTOR";
+const jitPackRepository =
+  '\n        // ' + MARKER +
+  '\n        maven { url "https://jitpack.io" }\n';
 
 function addJitPack(settings) {
   if (settings.includes(MARKER)) return settings;
@@ -11,23 +14,30 @@ function addJitPack(settings) {
   if (repositoriesBlock.test(settings)) {
     return settings.replace(
       repositoriesBlock,
+      match => match + jitPackRepository
+    );
+  }
+
+  const dependencyResolutionBlock =
+    /(dependencyResolutionManagement\s*\{)/m;
+
+  if (dependencyResolutionBlock.test(settings)) {
+    return settings.replace(
+      dependencyResolutionBlock,
       match =>
         match +
-        '\n        // ' +
-        MARKER +
-        '\n        maven { url "https://jitpack.io" }'
+        '\n    repositories {' +
+        jitPackRepository +
+        '    }\n'
     );
   }
 
   // settings.gradle is a Settings script: project-level allprojects {} is invalid here.
-  // Add JitPack as a dependency-resolution repository instead.
   return (
     settings +
     '\n\ndependencyResolutionManagement {\n' +
-    '    repositories {\n' +
-    '        // ' +
-    MARKER +
-    '\n        maven { url "https://jitpack.io" }\n' +
+    '    repositories {' +
+    jitPackRepository +
     '    }\n' +
     '}\n'
   );
