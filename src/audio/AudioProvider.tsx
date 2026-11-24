@@ -2,7 +2,7 @@ import React,{createContext,useContext,useEffect,useMemo,useRef,useState} from "
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {createAudioPlayer,setAudioModeAsync,useAudioPlayerStatus} from "expo-audio";
 import {isManagedAudio,migrateImportedAudio} from "./libraryStorage";
-import {validateCataloguePlaybackUrl} from "../../modules/newpipe-extractor";
+import {resolveCataloguePlaybackUrl,validateCataloguePlaybackUrl} from "../../modules/newpipe-extractor";
 
 export type LocalTrack={id:string;name:string;uri:string;artist:string;album?:string;source?:"Audius"|"Internet Archive"|"Wikimedia Commons"|"Local";license?:string;rightsLabel?:string;itemUrl?:string;artworkUrl?:string;duration?:number};
 type PersistedMusic={tracks:LocalTrack[];favorites:string[];recentTracks:LocalTrack[];activeTrackId:string|null};
@@ -33,6 +33,7 @@ export function AudioProvider({children}:{children:React.ReactNode}){
  const [storageReady,setStorageReady]=useState(false);
  const [sleepTimerEndsAt,setSleepTimerEndsAt]=useState<number|null>(null);
  const sleepTimeout=useRef<ReturnType<typeof setTimeout>|null>(null);
+ const activePlaybackRequest=useRef(0);
  const activeTrack=activeIndex>=0?tracks[activeIndex]||null:null;
 
  useEffect(()=>{let mounted=true;AsyncStorage.getItem(STATS_KEY).then(raw=>{if(raw&&mounted){const saved=JSON.parse(raw) as Partial<ListeningStats>;setListeningStats({totalSeconds:Math.max(0,Number(saved.totalSeconds)||0),dailySeconds:saved.dailySeconds&&typeof saved.dailySeconds==="object"?saved.dailySeconds:{},lastPlayedDay:typeof saved.lastPlayedDay==="string"?saved.lastPlayedDay:null});}}).catch(()=>{}).finally(()=>{if(mounted)setStatsReady(true);});return()=>{mounted=false;};},[]);
@@ -81,23 +82,33 @@ export function AudioProvider({children}:{children:React.ReactNode}){
   return [...old,...incoming.filter(t=>!seen.has(t.uri))];
  });
  const remember=(track:LocalTrack)=>setRecentTracks(old=>[track,...old.filter(item=>item.id!==track.id)].slice(0,50));
+ const resolveTrackUri=async(track:LocalTrack)=>{
+  if(!track.source||track.source==="Local")return track.uri;
+  const validation=validateCataloguePlaybackUrl(track.uri);
+  if(!validation.valid)throw new Error("This catalogue playback URL is not an approved RHYTHM E source.");
+  const resolved=await resolveCataloguePlaybackUrl(track.uri,track.id);
+  return resolved.playbackUrl;
+ };
  const playTrack=(index:number)=>{
   const track=tracks[index];if(!track)return;
+  const requestId=++activePlaybackRequest.current;
   setActiveIndex(index);remember(track);
-  player.replace({uri:track.uri,name:track.name});
-  player.setActiveForLockScreen(true,{title:track.name,artist:track.artist,albumTitle:track.album||(track.source?`RHYTHM E • ${track.source}`:"RHYTHM E • Local Library")});
-  player.play();
+  void resolveTrackUri(track).then(uri=>{
+   if(activePlaybackRequest.current!==requestId)return;
+   player.replace({uri,name:track.name});
+   player.setActiveForLockScreen(true,{title:track.name,artist:track.artist,albumTitle:track.album||(track.source?`RHYTHM E • ${track.source}`:"RHYTHM E • Local Library")});
+   player.play();
+  }).catch(error=>console.warn("RHYTHM E playback resolution failed",error));
  };
  const addAndPlayTrack=async(track:LocalTrack)=>{
-  if(track.source&&track.source!=="Local"){
-   const validation=validateCataloguePlaybackUrl(track.uri);
-   if(!validation.valid)throw new Error("This catalogue playback URL is not an approved RHYTHM E source.");
-  }
   const existing=tracks.findIndex(item=>item.id===track.id);
   if(existing>=0){playTrack(existing);return;}
+  const requestId=++activePlaybackRequest.current;
+  const playbackUri=await resolveTrackUri(track);
+  if(activePlaybackRequest.current!==requestId)return;
   const nextIndex=tracks.length;
   setTracks(old=>[...old,track]);setActiveIndex(nextIndex);remember(track);
-  player.replace({uri:track.uri,name:track.name});
+  player.replace({uri:playbackUri,name:track.name});
   player.setActiveForLockScreen(true,{title:track.name,artist:track.artist,albumTitle:track.album||"RHYTHM E"});
   player.play();
  };
