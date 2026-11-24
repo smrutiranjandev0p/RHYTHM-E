@@ -1,4 +1,6 @@
 import {useState} from "react";
+import {useColorScheme} from "react-native";
+import {useAppSettings,getThemePalette} from "../../src/settings/SettingsProvider";
 import {useRouter} from "expo-router";
 import * as DocumentPicker from "expo-document-picker";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
@@ -9,6 +11,7 @@ import {copyImportedAudioToLibrary} from "../../src/audio/libraryStorage";
 import ProfileButton from "../../src/components/ProfileButton";
 
 export default function LibraryScreen(){
+ const {theme}=useAppSettings();const p=getThemePalette(theme,useColorScheme());
  const router=useRouter();
  const {tracks,activeIndex,playTrack,status,addTracks,favorites,updateTrack}=useAudio();
  const [loading,setLoading]=useState(false);
@@ -49,33 +52,33 @@ export default function LibraryScreen(){
  const renderTrack=(track:LocalTrack,index:number,prefix="")=><View key={prefix+track.id} style={s.track}>
   <TouchableOpacity style={[s.cover,{backgroundColor:["#C34E7D","#7255A5","#397E79","#D47A35"][index%4]}]} onPress={()=>{playTrack(tracks.findIndex(item=>item.id===track.id));router.push("/player/local");}}><MaterialCommunityIcons name="music-note" size={24} color="#FFF"/></TouchableOpacity>
   <TouchableOpacity style={{flex:1}} onPress={()=>{playTrack(tracks.findIndex(item=>item.id===track.id));router.push("/player/local");}}>
-   <Text style={s.trackTitle} numberOfLines={1}>{track.name}</Text><Text style={s.trackArtist}>{track.artist}{track.album?" · "+track.album:""}</Text>
+   <Text style={[s.trackTitle,{color:p.text}]} numberOfLines={1}>{track.name}</Text><Text style={[s.trackArtist,{color:p.muted}]}>{track.artist}{track.album?" · "+track.album:""}</Text>
   </TouchableOpacity>
   <TouchableOpacity style={s.editButton} onPress={()=>openEditor(track)}><MaterialCommunityIcons name="pencil-outline" size={18} color="#FF9CC4"/></TouchableOpacity>
   {activeIndex===tracks.findIndex(item=>item.id===track.id)&&status.playing?<MaterialCommunityIcons name="volume-high" size={20} color="#FF9CC4"/>:<TouchableOpacity onPress={()=>{playTrack(tracks.findIndex(item=>item.id===track.id));router.push("/player/local");}}><MaterialCommunityIcons name="play-circle-outline" size={24} color="#FFF"/></TouchableOpacity>}
  </View>;
 
  return <>
- <ScrollView style={s.screen} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
-  <View style={{flexDirection:"row",alignItems:"center",justifyContent:"space-between"}}><Text style={s.kicker}>YOUR COLLECTION</Text><ProfileButton/></View><Text style={s.title}>Library</Text><Text style={s.sub}>Your music, saved on this device.</Text>
+ <ScrollView style={[s.screen,{backgroundColor:p.background}]} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
+  <View style={{flexDirection:"row",alignItems:"center",justifyContent:"space-between"}}><Text style={[s.kicker,{color:p.accent}]}>YOUR COLLECTION</Text><ProfileButton/></View><Text style={[s.title,{color:p.text}]}>Library</Text><Text style={[s.sub,{color:p.muted}]}>Your music, saved on this device.</Text>
   <TouchableOpacity style={s.importCard} onPress={importAudio} disabled={loading}><View style={s.importIcon}><MaterialCommunityIcons name="folder-music" size={28} color="#FFF"/></View><View style={{flex:1}}><Text style={s.importTitle}>{loading?"Copying music into your library…":"Import music from your phone"}</Text><Text style={s.importSub}>Imported audio is copied to RHYTHM E's private app storage</Text></View>{loading?<ActivityIndicator color="#FFF"/>:<MaterialCommunityIcons name="plus-circle" size={25} color="#FFF"/>}</TouchableOpacity>
-  <View style={s.section}><Text style={s.sectionTitle}>Your tracks</Text><Text style={s.count}>{tracks.length} TRACKS</Text></View>
-  {tracks.length===0?<View style={s.empty}><MaterialCommunityIcons name="music-box-multiple-outline" size={43} color="#FF9CC4"/><Text style={s.emptyTitle}>Your music lives here.</Text><Text style={s.emptyBody}>Import audio files to keep a private copy inside RHYTHM E.</Text></View>:tracks.map((track,index)=>renderTrack(track,index))}
-  <View style={s.section}><Text style={s.sectionTitle}>Artists</Text><Text style={s.count}>{new Set(tracks.map(t=>t.artist||"Unknown artist")).size} ARTISTS</Text></View>
-  <View style={s.browseGrid}>{Array.from(new Set(tracks.map(t=>t.artist||"Unknown artist"))).map(artist=><TouchableOpacity key={artist} style={s.browseCard} onPress={()=>router.push({pathname:"/artist/[name]",params:{name:artist}})}><View style={s.browseIcon}><MaterialCommunityIcons name="account-music" size={21} color="#FFF"/></View><Text style={s.browseTitle} numberOfLines={1}>{artist}</Text><Text style={s.browseSub}>View artist</Text></TouchableOpacity>)}</View>
-  <View style={s.section}><Text style={s.sectionTitle}>Albums</Text><Text style={s.count}>{new Set(tracks.map(t=>t.album||"Singles")).size} ALBUMS</Text></View>
-  <View style={s.browseGrid}>{Array.from(new Set(tracks.map(t=>t.album||"Singles"))).map(album=><TouchableOpacity key={album} style={s.browseCard} onPress={()=>router.push({pathname:"/album/[name]",params:{name:album}})}><View style={[s.browseIcon,{backgroundColor:"#397E79"}]}><MaterialCommunityIcons name="album" size={21} color="#FFF"/></View><Text style={s.browseTitle} numberOfLines={1}>{album}</Text><Text style={s.browseSub}>Open album</Text></TouchableOpacity>)}</View>
-  <View style={s.section}><Text style={s.sectionTitle}>Your favourites</Text><Text style={s.count}>{favorites.length} SAVED</Text></View>
-  {tracks.filter(track=>favorites.includes(track.id)).length===0?<Text style={s.emptyBody}>Tap the heart in Flow or Player to save tracks here.</Text>:tracks.filter(track=>favorites.includes(track.id)).map((track,index)=>renderTrack(track,index,"fav-"))}
-  <View style={s.note}><MaterialCommunityIcons name="shield-check-outline" size={16} color="#FF9CC4"/><Text style={s.noteText}>Your imported audio stays inside this app's private storage. RHYTHM E does not upload your music.</Text></View>
+  <View style={s.section}><Text style={[s.sectionTitle,{color:p.text}]}>Your tracks</Text><Text style={[s.count,{color:p.muted}]}>{tracks.length} TRACKS</Text></View>
+  {tracks.length===0?<View style={[s.empty,{backgroundColor:p.surface}]}><MaterialCommunityIcons name="music-box-multiple-outline" size={43} color="#FF9CC4"/><Text style={[s.emptyTitle,{color:p.text}]}>Your music lives here.</Text><Text style={[s.emptyBody,{color:p.muted}]}>Import audio files to keep a private copy inside RHYTHM E.</Text></View>:tracks.map((track,index)=>renderTrack(track,index))}
+  <View style={s.section}><Text style={[s.sectionTitle,{color:p.text}]}>Artists</Text><Text style={[s.count,{color:p.muted}]}>{new Set(tracks.map(t=>t.artist||"Unknown artist")).size} ARTISTS</Text></View>
+  <View style={s.browseGrid}>{Array.from(new Set(tracks.map(t=>t.artist||"Unknown artist"))).map(artist=><TouchableOpacity key={artist} style={[s.browseCard,{backgroundColor:p.surface,borderColor:p.border}]} onPress={()=>router.push({pathname:"/artist/[name]",params:{name:artist}})}><View style={s.browseIcon}><MaterialCommunityIcons name="account-music" size={21} color="#FFF"/></View><Text style={[s.browseTitle,{color:p.text}]} numberOfLines={1}>{artist}</Text><Text style={[s.browseSub,{color:p.muted}]}>View artist</Text></TouchableOpacity>)}</View>
+  <View style={s.section}><Text style={[s.sectionTitle,{color:p.text}]}>Albums</Text><Text style={[s.count,{color:p.muted}]}>{new Set(tracks.map(t=>t.album||"Singles")).size} ALBUMS</Text></View>
+  <View style={s.browseGrid}>{Array.from(new Set(tracks.map(t=>t.album||"Singles"))).map(album=><TouchableOpacity key={album} style={[s.browseCard,{backgroundColor:p.surface,borderColor:p.border}]} onPress={()=>router.push({pathname:"/album/[name]",params:{name:album}})}><View style={[s.browseIcon,{backgroundColor:"#397E79"}]}><MaterialCommunityIcons name="album" size={21} color="#FFF"/></View><Text style={[s.browseTitle,{color:p.text}]} numberOfLines={1}>{album}</Text><Text style={[s.browseSub,{color:p.muted}]}>Open album</Text></TouchableOpacity>)}</View>
+  <View style={s.section}><Text style={[s.sectionTitle,{color:p.text}]}>Your favourites</Text><Text style={[s.count,{color:p.muted}]}>{favorites.length} SAVED</Text></View>
+  {tracks.filter(track=>favorites.includes(track.id)).length===0?<Text style={[s.emptyBody,{color:p.muted}]}>Tap the heart in Flow or Player to save tracks here.</Text>:tracks.filter(track=>favorites.includes(track.id)).map((track,index)=>renderTrack(track,index,"fav-"))}
+  <View style={[s.note,{backgroundColor:p.surface}]}><MaterialCommunityIcons name="shield-check-outline" size={16} color="#FF9CC4"/><Text style={[s.noteText,{color:p.muted}]}>Your imported audio stays inside this app's private storage. RHYTHM E does not upload your music.</Text></View>
   <View style={{height:25}}/>
  </ScrollView>
  <Modal visible={!!editing} transparent animationType="slide" onRequestClose={()=>setEditing(null)}>
-  <View style={s.modalBackdrop}><View style={s.modalCard}>
-   <View style={s.modalHead}><Text style={s.modalTitle}>Edit track details</Text><TouchableOpacity onPress={()=>setEditing(null)}><MaterialCommunityIcons name="close" size={23} color="#FFF"/></TouchableOpacity></View>
-   <Text style={s.fieldLabel}>TRACK TITLE</Text><TextInput value={editName} onChangeText={setEditName} placeholder="Track title" placeholderTextColor="#8F7D95" style={s.field}/>
-   <Text style={s.fieldLabel}>ARTIST</Text><TextInput value={editArtist} onChangeText={setEditArtist} placeholder="Artist name" placeholderTextColor="#8F7D95" style={s.field}/>
-   <Text style={s.fieldLabel}>ALBUM</Text><TextInput value={editAlbum} onChangeText={setEditAlbum} placeholder="Album name (optional)" placeholderTextColor="#8F7D95" style={s.field}/>
+  <View style={s.modalBackdrop}><View style={[s.modalCard,{backgroundColor:p.surface,borderColor:p.border}]}>
+   <View style={s.modalHead}><Text style={[s.modalTitle,{color:p.text}]}>Edit track details</Text><TouchableOpacity onPress={()=>setEditing(null)}><MaterialCommunityIcons name="close" size={23} color="#FFF"/></TouchableOpacity></View>
+   <Text style={s.fieldLabel}>TRACK TITLE</Text><TextInput value={editName} onChangeText={setEditName} placeholder="Track title" placeholderTextColor="#8F7D95" style={[s.field,{backgroundColor:p.surfaceAlt,color:p.text,borderColor:p.border}]}/>
+   <Text style={s.fieldLabel}>ARTIST</Text><TextInput value={editArtist} onChangeText={setEditArtist} placeholder="Artist name" placeholderTextColor="#8F7D95" style={[s.field,{backgroundColor:p.surfaceAlt,color:p.text,borderColor:p.border}]}/>
+   <Text style={s.fieldLabel}>ALBUM</Text><TextInput value={editAlbum} onChangeText={setEditAlbum} placeholder="Album name (optional)" placeholderTextColor="#8F7D95" style={[s.field,{backgroundColor:p.surfaceAlt,color:p.text,borderColor:p.border}]}/>
    {!!editError&&<Text style={s.editError}>{editError}</Text>}
    <TouchableOpacity style={s.saveButton} onPress={saveMetadata}><Text style={s.saveText}>SAVE DETAILS</Text></TouchableOpacity>
   </View></View>
