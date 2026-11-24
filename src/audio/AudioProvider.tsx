@@ -34,10 +34,10 @@ export function AudioProvider({children}:{children:React.ReactNode}){
  const sleepTimeout=useRef<ReturnType<typeof setTimeout>|null>(null);
  const activeTrack=activeIndex>=0?tracks[activeIndex]||null:null;
 
- useEffect(()=>{
  useEffect(()=>{let mounted=true;AsyncStorage.getItem(STATS_KEY).then(raw=>{if(raw&&mounted){const saved=JSON.parse(raw) as Partial<ListeningStats>;setListeningStats({totalSeconds:Math.max(0,Number(saved.totalSeconds)||0),dailySeconds:saved.dailySeconds&&typeof saved.dailySeconds==="object"?saved.dailySeconds:{},lastPlayedDay:typeof saved.lastPlayedDay==="string"?saved.lastPlayedDay:null});}}).catch(()=>{}).finally(()=>{if(mounted)setStatsReady(true);});return()=>{mounted=false;};},[]);
  useEffect(()=>{if(!statsReady)return;AsyncStorage.setItem(STATS_KEY,JSON.stringify(listeningStats)).catch(()=>{});},[statsReady,listeningStats]);
  useEffect(()=>{if(!status.playing||!activeTrack)return;const interval=setInterval(()=>{setListeningStats(old=>{const day=localDay();return {...old,totalSeconds:old.totalSeconds+5,dailySeconds:{...old.dailySeconds,[day]:(old.dailySeconds[day]||0)+5},lastPlayedDay:day};});},5000);return()=>clearInterval(interval);},[status.playing,activeTrack?.id]);
+ useEffect(()=>{
   let mounted=true;
   AsyncStorage.getItem(STORAGE_KEY).then(async raw=>{
    if(!raw||!mounted)return;
