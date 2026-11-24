@@ -1,6 +1,10 @@
 apply plugin: "com.android.library"
 apply plugin: "expo-module-gradle-plugin"
 
+android {
+  namespace "expo.modules.newpipeextractor"
+}
+
 group = "expo.modules.newpipeextractor"
 version = "0.1.0"
 
