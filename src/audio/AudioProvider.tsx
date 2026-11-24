@@ -114,7 +114,7 @@ export function AudioProvider({children}:{children:React.ReactNode}){
  };
  const toggleFavorite=(id:string)=>setFavorites(old=>old.includes(id)?old.filter(item=>item!==id):[...old,id]);
  const isFavorite=(id:string)=>favorites.includes(id);
- const togglePlayback=()=>{if(status.playing){player.pause();return;}if(activeIndex>=0){player.play();return;}if(tracks.length)playTrack(0);};
+ const togglePlayback=()=>{if(status.playing){player.pause();return;}if(activeIndex>=0){playTrack(activeIndex);return;}if(tracks.length)playTrack(0);};
  const skipNext=()=>{if(tracks.length)playTrack((activeIndex+1+tracks.length)%tracks.length);};
  const skipPrevious=()=>{if(status.currentTime>3){player.seekTo(0);return;}if(tracks.length)playTrack((activeIndex-1+tracks.length)%tracks.length);};
  const seekTo=(seconds:number)=>player.seekTo(Math.max(0,Math.min(seconds,status.duration||0)));
