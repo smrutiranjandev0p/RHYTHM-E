@@ -117,7 +117,7 @@ class StreamResolveCoordinator(
                 return result
             } catch (cancelled: CancellationException) {
                 throw cancelled
-            } catch (error: Throwable) {
+            } catch (error: Exception) {
                 lastError = error
             }
         }
