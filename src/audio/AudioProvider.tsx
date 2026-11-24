@@ -2,6 +2,7 @@ import React,{createContext,useContext,useEffect,useMemo,useRef,useState} from "
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {createAudioPlayer,setAudioModeAsync,useAudioPlayerStatus} from "expo-audio";
 import {isManagedAudio,migrateImportedAudio} from "./libraryStorage";
+import {validateCataloguePlaybackUrl} from "../../modules/newpipe-extractor";
 
 export type LocalTrack={id:string;name:string;uri:string;artist:string;album?:string;source?:"Audius"|"Internet Archive"|"Wikimedia Commons"|"Local";license?:string;rightsLabel?:string;itemUrl?:string;artworkUrl?:string;duration?:number};
 type PersistedMusic={tracks:LocalTrack[];favorites:string[];recentTracks:LocalTrack[];activeTrackId:string|null};
@@ -11,7 +12,7 @@ const localDay=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMo
 const emptyStats:ListeningStats={totalSeconds:0,dailySeconds:{},lastPlayedDay:null};
 type AudioContextValue={
  tracks:LocalTrack[];activeIndex:number;activeTrack:LocalTrack|null;status:any;
- addTracks:(tracks:LocalTrack[])=>void;updateTrack:(id:string,changes:Partial<Pick<LocalTrack,"name"|"artist"|"album">>)=>void;addAndPlayTrack:(track:LocalTrack)=>void;playTrack:(index:number)=>void;
+ addTracks:(tracks:LocalTrack[])=>void;updateTrack:(id:string,changes:Partial<Pick<LocalTrack,"name"|"artist"|"album">>)=>void;addAndPlayTrack:(track:LocalTrack)=>Promise<void>;playTrack:(index:number)=>void;
  toggleFavorite:(id:string)=>void;isFavorite:(id:string)=>boolean;favorites:string[];
  togglePlayback:()=>void;skipNext:()=>void;skipPrevious:()=>void;seekTo:(seconds:number)=>void;
  recentTracks:LocalTrack[];listeningStats:ListeningStats;setSleepTimer:(minutes:number)=>void;cancelSleepTimer:()=>void;sleepTimerEndsAt:number|null;
@@ -87,7 +88,11 @@ export function AudioProvider({children}:{children:React.ReactNode}){
   player.setActiveForLockScreen(true,{title:track.name,artist:track.artist,albumTitle:track.album||(track.source?`RHYTHM E • ${track.source}`:"RHYTHM E • Local Library")});
   player.play();
  };
- const addAndPlayTrack=(track:LocalTrack)=>{
+ const addAndPlayTrack=async(track:LocalTrack)=>{
+  if(track.source&&track.source!=="Local"){
+   const validation=validateCataloguePlaybackUrl(track.uri);
+   if(!validation.valid)throw new Error("This catalogue playback URL is not an approved RHYTHM E source.");
+  }
   const existing=tracks.findIndex(item=>item.id===track.id);
   if(existing>=0){playTrack(existing);return;}
   const nextIndex=tracks.length;
