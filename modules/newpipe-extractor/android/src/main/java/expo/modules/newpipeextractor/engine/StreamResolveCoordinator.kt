@@ -61,8 +61,8 @@ class StreamResolveCoordinator(
             try {
                 val media = resolveForPrefetch(input, mediaIdentity)
                 if (media.isUsable(nowEpochMs())) onReady(media)
-            } catch (_: CancellationException) {
-                throw
+            } catch (cancelled: CancellationException) {
+                throw cancelled
             } catch (_: Throwable) {
                 // Prefetch is speculative. Playback will report the user-visible error.
             }
