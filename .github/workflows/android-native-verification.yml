@@ -25,6 +25,8 @@ jobs:
           java-version: "17"
       - name: Install JavaScript dependencies
         run: npm install
+      - name: TypeScript validation
+        run: npx tsc --noEmit
       - name: Generate native Android project
         run: npx expo prebuild --platform android --non-interactive
       - name: Assemble debug APK
