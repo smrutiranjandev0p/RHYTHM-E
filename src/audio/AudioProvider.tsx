@@ -2,6 +2,7 @@ import React,{createContext,useContext,useEffect,useMemo,useRef,useState} from "
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {createAudioPlayer,setAudioModeAsync,useAudioPlayerStatus} from "expo-audio";
 import {isManagedAudio,migrateImportedAudio} from "./libraryStorage";
+import {resolveCataloguePlaybackUrl,validateCataloguePlaybackUrl} from "../../modules/newpipe-extractor";
 
 export type LocalTrack={id:string;name:string;uri:string;artist:string;album?:string;source?:"Audius"|"Internet Archive"|"Wikimedia Commons"|"Local";license?:string;rightsLabel?:string;itemUrl?:string;artworkUrl?:string;duration?:number};
 type PersistedMusic={tracks:LocalTrack[];favorites:string[];recentTracks:LocalTrack[];activeTrackId:string|null};
@@ -11,7 +12,7 @@ const localDay=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMo
 const emptyStats:ListeningStats={totalSeconds:0,dailySeconds:{},lastPlayedDay:null};
 type AudioContextValue={
  tracks:LocalTrack[];activeIndex:number;activeTrack:LocalTrack|null;status:any;
- addTracks:(tracks:LocalTrack[])=>void;updateTrack:(id:string,changes:Partial<Pick<LocalTrack,"name"|"artist"|"album">>)=>void;addAndPlayTrack:(track:LocalTrack)=>void;playTrack:(index:number)=>void;
+ addTracks:(tracks:LocalTrack[])=>void;updateTrack:(id:string,changes:Partial<Pick<LocalTrack,"name"|"artist"|"album">>)=>void;addAndPlayTrack:(track:LocalTrack)=>Promise<void>;playTrack:(index:number)=>void;
  toggleFavorite:(id:string)=>void;isFavorite:(id:string)=>boolean;favorites:string[];
  togglePlayback:()=>void;skipNext:()=>void;skipPrevious:()=>void;seekTo:(seconds:number)=>void;
  recentTracks:LocalTrack[];listeningStats:ListeningStats;setSleepTimer:(minutes:number)=>void;cancelSleepTimer:()=>void;sleepTimerEndsAt:number|null;
@@ -32,6 +33,7 @@ export function AudioProvider({children}:{children:React.ReactNode}){
  const [storageReady,setStorageReady]=useState(false);
  const [sleepTimerEndsAt,setSleepTimerEndsAt]=useState<number|null>(null);
  const sleepTimeout=useRef<ReturnType<typeof setTimeout>|null>(null);
+ const activePlaybackRequest=useRef(0);
  const activeTrack=activeIndex>=0?tracks[activeIndex]||null:null;
 
  useEffect(()=>{let mounted=true;AsyncStorage.getItem(STATS_KEY).then(raw=>{if(raw&&mounted){const saved=JSON.parse(raw) as Partial<ListeningStats>;setListeningStats({totalSeconds:Math.max(0,Number(saved.totalSeconds)||0),dailySeconds:saved.dailySeconds&&typeof saved.dailySeconds==="object"?saved.dailySeconds:{},lastPlayedDay:typeof saved.lastPlayedDay==="string"?saved.lastPlayedDay:null});}}).catch(()=>{}).finally(()=>{if(mounted)setStatsReady(true);});return()=>{mounted=false;};},[]);
@@ -80,25 +82,39 @@ export function AudioProvider({children}:{children:React.ReactNode}){
   return [...old,...incoming.filter(t=>!seen.has(t.uri))];
  });
  const remember=(track:LocalTrack)=>setRecentTracks(old=>[track,...old.filter(item=>item.id!==track.id)].slice(0,50));
+ const resolveTrackUri=async(track:LocalTrack)=>{
+  if(!track.source||track.source==="Local")return track.uri;
+  const validation=validateCataloguePlaybackUrl(track.uri);
+  if(!validation.valid)throw new Error("This catalogue playback URL is not an approved RHYTHM E source.");
+  const resolved=await resolveCataloguePlaybackUrl(track.uri,track.id);
+  return resolved.playbackUrl;
+ };
  const playTrack=(index:number)=>{
   const track=tracks[index];if(!track)return;
+  const requestId=++activePlaybackRequest.current;
   setActiveIndex(index);remember(track);
-  player.replace({uri:track.uri,name:track.name});
-  player.setActiveForLockScreen(true,{title:track.name,artist:track.artist,albumTitle:track.album||(track.source?`RHYTHM E • ${track.source}`:"RHYTHM E • Local Library")});
-  player.play();
+  void resolveTrackUri(track).then(uri=>{
+   if(activePlaybackRequest.current!==requestId)return;
+   player.replace({uri,name:track.name});
+   player.setActiveForLockScreen(true,{title:track.name,artist:track.artist,albumTitle:track.album||(track.source?`RHYTHM E • ${track.source}`:"RHYTHM E • Local Library")});
+   player.play();
+  }).catch(error=>console.warn("RHYTHM E playback resolution failed",error));
  };
- const addAndPlayTrack=(track:LocalTrack)=>{
+ const addAndPlayTrack=async(track:LocalTrack)=>{
   const existing=tracks.findIndex(item=>item.id===track.id);
   if(existing>=0){playTrack(existing);return;}
+  const requestId=++activePlaybackRequest.current;
+  const playbackUri=await resolveTrackUri(track);
+  if(activePlaybackRequest.current!==requestId)return;
   const nextIndex=tracks.length;
   setTracks(old=>[...old,track]);setActiveIndex(nextIndex);remember(track);
-  player.replace({uri:track.uri,name:track.name});
+  player.replace({uri:playbackUri,name:track.name});
   player.setActiveForLockScreen(true,{title:track.name,artist:track.artist,albumTitle:track.album||"RHYTHM E"});
   player.play();
  };
  const toggleFavorite=(id:string)=>setFavorites(old=>old.includes(id)?old.filter(item=>item!==id):[...old,id]);
  const isFavorite=(id:string)=>favorites.includes(id);
- const togglePlayback=()=>{if(status.playing){player.pause();return;}if(activeIndex>=0){player.play();return;}if(tracks.length)playTrack(0);};
+ const togglePlayback=()=>{if(status.playing){player.pause();return;}if(activeIndex>=0){playTrack(activeIndex);return;}if(tracks.length)playTrack(0);};
  const skipNext=()=>{if(tracks.length)playTrack((activeIndex+1+tracks.length)%tracks.length);};
  const skipPrevious=()=>{if(status.currentTime>3){player.seekTo(0);return;}if(tracks.length)playTrack((activeIndex-1+tracks.length)%tracks.length);};
  const seekTo=(seconds:number)=>player.seekTo(Math.max(0,Math.min(seconds,status.duration||0)));
