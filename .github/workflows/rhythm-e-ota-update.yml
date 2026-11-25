@@ -1,0 +1,39 @@
+name: RHYTHM E OTA Update
+
+on:
+  push:
+    branches: [development]
+    paths-ignore:
+      - "README.md"
+      - "docs/**"
+      - ".github/**"
+  workflow_dispatch:
+    inputs:
+      message:
+        description: "Update message"
+        required: true
+        default: "RHYTHM E preview update"
+
+jobs:
+  publish-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout development
+        uses: actions/checkout@v4
+        with:
+          ref: development
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install
+      - name: Validate Expo project configuration
+        run: npx expo config --type public
+      - name: Publish Android OTA update to preview channel
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          UPDATE_MESSAGE: ${{ github.event.inputs.message || format('development {0}', github.sha) }}
+          CI: "1"
+        run: npx eas-cli@latest update --channel preview --platform android --message "$UPDATE_MESSAGE"

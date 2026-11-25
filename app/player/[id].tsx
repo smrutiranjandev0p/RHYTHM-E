@@ -1,0 +1,45 @@
+import {useLocalSearchParams,useRouter} from "expo-router";
+import {useColorScheme} from "react-native";
+import {useAppSettings,getThemePalette} from "../../src/settings/SettingsProvider";
+import {useState} from "react";
+import {MaterialCommunityIcons} from "@expo/vector-icons";
+import {ScrollView,StyleSheet,Text,TouchableOpacity,View} from "react-native";
+import {useAudio} from "../../src/audio/AudioProvider";
+
+const clock=(n:number)=>{if(!Number.isFinite(n))return "0:00";const m=Math.floor(n/60);const sec=Math.floor(n%60);return m+":"+String(sec).padStart(2,"0");};
+export default function PlayerScreen(){
+ const {theme}=useAppSettings();const p=getThemePalette(theme,useColorScheme());
+ const {id}=useLocalSearchParams<{id:string}>();const router=useRouter();const {tracks,activeIndex,activeTrack,status,togglePlayback,skipNext,skipPrevious,seekTo,toggleFavorite,favorites,playTrack}=useAudio();
+ const [showQueue,setShowQueue]=useState(false);
+ const liked=!!activeTrack&&favorites.includes(activeTrack.id);
+ const hasTrack=!!activeTrack;const title=activeTrack?.name||(id==="featured"?"The Midnight Edit":String(id||"Your track").replace(/-/g," "));
+ const duration=status.duration||0;const progress=duration>0?Math.min(100,status.currentTime/duration*100):0;
+ return <View style={[s.screen,{backgroundColor:p.background}]}>
+  <View style={s.header}><TouchableOpacity onPress={()=>router.back()} style={s.back}><MaterialCommunityIcons name="chevron-down" size={28} color="#FFF"/></TouchableOpacity><Text style={[s.headerText,{color:p.muted}]}>{hasTrack?"NOW PLAYING":"PLAYER PREVIEW"}</Text><TouchableOpacity onPress={()=>setShowQueue(!showQueue)}><MaterialCommunityIcons name="playlist-music" size={24} color="#FFF"/></TouchableOpacity></View>
+  <View style={s.art}><View style={s.sun}/><View style={s.orbit}/><View style={s.disc}><MaterialCommunityIcons name="music-note-eighth" size={72} color="#FFF"/></View><Text style={s.artLabel}>RHYTHM E</Text></View>
+  <View style={s.song}><View style={{flex:1}}><Text style={[s.title,{color:p.text}]} numberOfLines={1}>{title}</Text><Text style={[s.artist,{color:p.muted}]}>{activeTrack?.artist||"RHYTHM E • DEMO"}</Text></View><TouchableOpacity onPress={()=>activeTrack&&toggleFavorite(activeTrack.id)}><MaterialCommunityIcons name={liked?"heart":"heart-outline"} size={25} color="#FF8DBB"/></TouchableOpacity></View>
+  <View style={s.wave}>{Array.from({length:39},(_,i)=><View key={i} style={[s.bar,{height:7+(i*17%25),opacity:i<Math.round(progress/100*39)?1:.35}]}/>)}</View>
+  <View style={[s.progressTrack,{backgroundColor:p.border}]}><View style={[s.progressFill,{width:progress+"%"}]}/></View>
+  <View style={s.times}><Text style={[s.muted,{color:p.muted}]}>{clock(status.currentTime||0)}</Text><Text style={[s.muted,{color:p.muted}]}>{duration?clock(duration):"--:--"}</Text></View>
+  {hasTrack?<View style={s.controls}><TouchableOpacity onPress={skipPrevious}><MaterialCommunityIcons name="skip-previous" size={34} color="#FFF"/></TouchableOpacity><TouchableOpacity onPress={()=>seekTo((status.currentTime||0)-15)}><MaterialCommunityIcons name="rewind-15" size={26} color="#D8C2DB"/></TouchableOpacity><TouchableOpacity style={s.play} onPress={togglePlayback}><MaterialCommunityIcons name={status.playing?"pause":"play"} size={34} color="#26111D"/></TouchableOpacity><TouchableOpacity onPress={()=>seekTo((status.currentTime||0)+15)}><MaterialCommunityIcons name="fast-forward-15" size={26} color="#D8C2DB"/></TouchableOpacity><TouchableOpacity onPress={skipNext}><MaterialCommunityIcons name="skip-next" size={34} color="#FFF"/></TouchableOpacity></View>:<TouchableOpacity style={s.importButton} onPress={()=>router.push("/(tabs)/library")}><MaterialCommunityIcons name="folder-music" size={19} color="#26111D"/><Text style={s.importText}>IMPORT MUSIC TO PLAY</Text></TouchableOpacity>}
+  {showQueue&&<View style={[s.queue,{backgroundColor:p.surface,borderColor:p.border}]}><Text style={[s.queueTitle,{color:p.accent}]}>UP NEXT · {tracks.length} TRACKS</Text><ScrollView style={{maxHeight:130}}>{tracks.map((track,index)=><TouchableOpacity key={track.id} style={s.queueItem} onPress={()=>playTrack(index)}><Text numberOfLines={1} style={[s.queueName,{color:index===activeIndex?"#FF9CC4":"#FFF"}]}>{index+1}. {track.name}</Text><Text style={[s.queueArtist,{color:p.muted}]}>{track.artist}</Text></TouchableOpacity>)}</ScrollView></View>}
+  <TouchableOpacity style={s.lyricsButton} onPress={()=>router.push({pathname:"/lyrics/[id]",params:{id:String(id||"midnight-drive")}})}><MaterialCommunityIcons name="text" size={17} color="#FFF"/><Text style={s.lyricsText}>OPEN LYRICS</Text><MaterialCommunityIcons name="chevron-right" size={18} color="#FFF"/></TouchableOpacity>
+  <Text style={[s.info,{color:p.muted}]}>{hasTrack?"Playing a file selected from your device.":"Choose a local audio file from your Library to start playback."}</Text>
+ </View>
+}
+const s=StyleSheet.create({
+ screen:{flex:1,backgroundColor:"#160D1C",paddingHorizontal:23,paddingTop:55,alignItems:"center"},
+ header:{width:"100%",flexDirection:"row",alignItems:"center",justifyContent:"space-between"},back:{width:42,height:42,borderRadius:15,backgroundColor:"#FFFFFF14",alignItems:"center",justifyContent:"center"},headerText:{color:"#D9C5DC",fontSize:10,letterSpacing:2,fontWeight:"900"},
+ art:{width:285,height:285,borderRadius:32,backgroundColor:"#E84D91",marginTop:33,alignItems:"center",justifyContent:"center",overflow:"hidden"},
+ sun:{position:"absolute",width:230,height:230,borderRadius:115,backgroundColor:"#FFB45C",top:-52,right:-40},orbit:{position:"absolute",width:255,height:255,borderRadius:128,borderWidth:2,borderColor:"#FFFFFF65",transform:[{rotate:"-25deg"}]},
+ disc:{width:158,height:158,borderRadius:79,backgroundColor:"#672B70",alignItems:"center",justifyContent:"center",borderWidth:8,borderColor:"#FFFFFF35"},artLabel:{position:"absolute",bottom:20,left:20,color:"#FFF",fontSize:10,letterSpacing:3,fontWeight:"900"},
+ song:{width:"100%",flexDirection:"row",alignItems:"center",marginTop:24},title:{color:"#FFF",fontSize:21,fontWeight:"900",textTransform:"capitalize"},artist:{color:"#B9A6BD",fontSize:10,letterSpacing:1,marginTop:7},
+ wave:{width:"100%",height:29,flexDirection:"row",alignItems:"center",justifyContent:"space-between",marginTop:18},bar:{width:3,borderRadius:3,backgroundColor:"#FF8DBB"},
+ progressTrack:{height:3,width:"100%",backgroundColor:"#49364D",borderRadius:3,marginTop:7,overflow:"hidden"},progressFill:{height:3,backgroundColor:"#FF75AB"},
+ times:{width:"100%",flexDirection:"row",justifyContent:"space-between",marginTop:7},muted:{color:"#907D96",fontSize:10},
+ controls:{width:"100%",flexDirection:"row",alignItems:"center",justifyContent:"space-between",marginTop:23},play:{width:62,height:62,borderRadius:31,backgroundColor:"#FF9CC4",alignItems:"center",justifyContent:"center"},
+ importButton:{marginTop:22,flexDirection:"row",alignItems:"center",gap:9,backgroundColor:"#FF9CC4",paddingHorizontal:18,paddingVertical:15,borderRadius:24},importText:{color:"#26111D",fontSize:10,fontWeight:"900",letterSpacing:1},
+ queue:{width:"100%",backgroundColor:"#25192B",borderRadius:15,padding:12,marginTop:13,borderWidth:1,borderColor:"#49364D"},queueTitle:{color:"#FF9CC4",fontSize:9,fontWeight:"900",letterSpacing:1.2,marginBottom:8},queueItem:{paddingVertical:7,borderBottomWidth:1,borderBottomColor:"#49364D"},queueName:{fontSize:10,fontWeight:"800"},queueArtist:{color:"#A98EAA",fontSize:8,marginTop:3},
+ lyricsButton:{marginTop:20,flexDirection:"row",alignItems:"center",gap:10,backgroundColor:"#FFFFFF18",paddingHorizontal:17,paddingVertical:12,borderRadius:22},lyricsText:{color:"#FFF",fontSize:10,fontWeight:"900",letterSpacing:1.5},
+ info:{color:"#907D96",fontSize:9,textAlign:"center",marginTop:15}
+});
