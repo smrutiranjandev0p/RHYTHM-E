@@ -2,9 +2,9 @@ name: Android native verification
 
 on:
   pull_request:
-    branches: [development]
+    branches: [main, development]
   push:
-    branches: [feature/kotlin-stream-resolver-core]
+    branches: [main, feature/kotlin-stream-resolver-core]
   workflow_dispatch:
 
 jobs:
